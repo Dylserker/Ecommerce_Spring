@@ -1,9 +1,12 @@
 package com.judy.ecommerce.frontend.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @RequestMapping("/user")
@@ -54,7 +57,14 @@ public class UserController {
     }
 
     @GetMapping("/cart")
-    public String showCart() {
+    public String showCart(Model model) {
+        // Initialiser les variables pour le panier
+        List<Object> cartItems = new ArrayList<>();
+        model.addAttribute("cartItems", cartItems);
+        model.addAttribute("cartEmpty", cartItems.isEmpty());
+        model.addAttribute("subtotal", 0.0);
+        model.addAttribute("tax", 0.0);
+        model.addAttribute("total", 0.0);
         return "user/panier";
     }
 
