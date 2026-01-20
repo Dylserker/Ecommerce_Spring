@@ -8,23 +8,8 @@
     <link rel="stylesheet" th:href="@{/css/user/product.css}">
 </head>
 <body class="dashboard-page">
-    <nav class="navbar">
-        <div class="navbar-top">
-            <div class="navbar-logo">Logo</div>
-            <div class="navbar-search">
-                <input type="text" id="searchInput" placeholder="Barre de recherche" class="search-bar">
-            </div>
-            <div class="navbar-actions">
-                <a th:href="@{/user/profile}" class="navbar-link">Profil</a>
-                <a href="#" class="navbar-link">Panier</a>
-            </div>
-        </div>
-        <div class="navbar-categories">
-            <a href="#" class="category-link">Ordinateur</a>
-            <a href="#" class="category-link">smartphone</a>
-            <a href="#" class="category-link">Accessoires</a>
-        </div>
-    </nav>
+    <!-- Inclusion du fragment navbar -->
+    <div th:replace="~{fragments/navbar :: user-navbar}"></div>
 
     <div class="container">
         <a href="#" class="btn-secondary">retour</a>

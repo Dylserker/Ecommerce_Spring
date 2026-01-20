@@ -4,7 +4,7 @@ body { background: #F0F3F5; font-family: -apple-system, BlinkMacSystemFont, 'Seg
 .navbar { background: linear-gradient(135deg, #708090 0%, #778899 100%); box-shadow: 0 4px 12px rgba(0,0,0,0.15); position: sticky; top: 0; z-index: 100; }
 .navbar-top { display: flex; align-items: center; justify-content: space-between; padding: 15px 30px; gap: 20px; }
 .navbar-logo { color: #E8E8E8; font-size: 20px; font-weight: 700; letter-spacing: 2px; }
-.navbar-search { flex: 1; max-width: 300px; }
+.navbar-search { flex: 1 1 640px; max-width: 720px; }
 .search-bar { width: 100%; padding: 10px 15px; border: 2px solid #D3D3D3; border-radius: 6px; background: white; color: #2C3E50; }
 .navbar-actions { display: flex; gap: 20px; }
 .navbar-link { color: #E8E8E8; text-decoration: none; font-weight: 600; transition: color 0.3s; font-size: 14px; }

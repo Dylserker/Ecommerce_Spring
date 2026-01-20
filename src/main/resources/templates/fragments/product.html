@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <!-- Fragment pour afficher un produit en format liste -->
+    <div th:fragment="product-row" class="product-row">
+        <div class="product-item-img">
+            <img th:src="${product.imageUrl}" alt="${product.name}" class="product-list-img">
+        </div>
+        <div class="product-item-info">
+            <h4 th:text="${product.name}">Titre</h4>
+            <p th:text="${product.description}">Description</p>
+            <span class="product-rating" th:if="${product.rating}">
+                <span th:text="'★★★★★ ' + ${product.rating}"></span>
+            </span>
+        </div>
+        <div class="product-item-price" th:text="'€ ' + ${product.price}">Prix</div>
+        <div class="product-item-actions">
+            <a th:href="@{/user/product/{id}(id=${product.id})}" class="btn-primary">Voir détails</a>
+            <button class="btn-secondary" th:onclick="'addToCart(' + ${product.id} + ')'" th:disabled="${product.stock == 0}">
+                <span th:text="${product.stock > 0 ? 'Panier' : 'Indisponible'}"></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Fragment pour afficher un produit en format carte/grille -->
+    <div th:fragment="product-card" class="product-card">
+        <div class="product-card-img">
+            <img th:src="${product.imageUrl}" alt="${product.name}" class="product-grid-img">
+            <span th:if="${product.discount > 0}" class="discount-badge" th:text="'-' + ${product.discount} + '%'"></span>
+        </div>
+        <div class="product-card-info">
+            <h3 th:text="${product.name}">Produit</h3>
+            <p class="product-description" th:text="${product.description}">Description</p>
+            <div class="product-card-rating" th:if="${product.rating}">
+                <span th:text="'★★★★★ ' + ${product.rating}"></span>
+                <span class="review-count" th:text="'(' + ${product.reviews} + ' avis)'"></span>
+            </div>
+            <div class="product-card-price">
+                <span class="current-price" th:text="'€ ' + ${product.price}">Prix</span>
+                <span class="original-price" th:if="${product.discount > 0}" th:text="'€ ' + ${product.originalPrice}"></span>
+            </div>
+            <div class="product-card-stock" th:classappend="${product.stock > 0 ? 'in-stock' : 'out-of-stock'}">
+                <span th:if="${product.stock > 0}" th:text="'✓ ' + ${product.stock} + ' en stock'"></span>
+                <span th:if="${product.stock == 0}">Rupture de stock</span>
+            </div>
+            <div class="product-card-actions">
+                <a th:href="@{/user/product/{id}(id=${product.id})}" class="btn-primary">Voir détails</a>
+                <button class="btn-secondary" th:onclick="'addToCart(' + ${product.id} + ')'" th:disabled="${product.stock == 0}">
+                    <span th:text="${product.stock > 0 ? 'Panier' : 'Indisponible'}"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
