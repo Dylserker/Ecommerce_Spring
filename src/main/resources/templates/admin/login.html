@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Connexion</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="login-page" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">
+    <div class="login-container">
+        <div class="login-header">
+            <h1>🔐 Espace Administrateur</h1>
+            <p>Connexion sécurisée réservée aux administrateurs</p>
+        </div>
+        <form th:action="@{/admin/login}" method="post" class="login-form">
+            <div class="form-group">
+                <label for="email">Email administrateur:</label>
+                <input type="email" id="email" name="email" required placeholder="admin@exemple.com">
+            </div>
+            <div class="form-group">
+                <label for="password">Mot de passe:</label>
+                <input type="password" id="password" name="password" required placeholder="Entrez votre mot de passe">
+            </div>
+            <div th:if="${param.error}" class="alert alert-error">
+                ❌ Identifiants administrateur invalides
+            </div>
+            <button type="submit" class="btn-primary">Connexion Admin</button>
+            <div class="form-links">
+                <p><a th:href="@{/}" class="link-secondary">← Retour à l'accueil</a></p>
+            </div>
+        </form>
+    </div>
+
+    <style>
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header h1 {
+            font-size: 2em;
+            color: #c0392b;
+            margin-bottom: 10px;
+        }
+
+        .login-header p {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .alert {
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            font-size: 0.95em;
+        }
+
+        .alert-error {
+            background-color: #fadbd8;
+            color: #a93226;
+            border: 1px solid #f5b7b1;
+        }
+
+        .link-secondary {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .link-secondary:hover {
+            text-decoration: underline;
+        }
+    </style>
+</body>
+</html>

@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard admin - crud commande</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/orders.css}">
+</head>
+<body class="dashboard-page">
+    <nav class="navbar">
+        <div class="navbar-top">
+            <div class="navbar-logo">Logo</div>
+            <div class="navbar-search">
+                <input type="text" id="searchInput" placeholder="Barre de recherche" class="search-bar">
+            </div>
+            <div class="navbar-actions">
+                <a href="#" class="navbar-link">Profil</a>
+                <a href="#" class="navbar-link">Panier</a>
+            </div>
+        </div>
+        <div class="navbar-categories">
+            <a href="#" class="category-link">Ordinateur</a>
+            <a href="#" class="category-link">smartphone</a>
+            <a href="#" class="category-link">Accessoires</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="admin-table-container">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>user / commande / n° commande / total</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="ordersTableBody">
+                    <tr class="order-row" th:each="order : ${orders}">
+                        <td class="order-details">
+                            <div class="order-detail-text" th:text="${order.user} + ' / ' + ${order.status} + ' / ' + ${order.orderNumber} + ' / €' + ${order.total}">user / commande / n° commande / total</div>
+                        </td>
+                        <td class="order-actions">
+                            <button class="btn-edit" th:onclick="'editOrder(' + ${order.id} + ')'" title="Éditer">Modifier</button>
+                            <button class="btn-delete" th:onclick="'deleteOrder(' + ${order.id} + ')'" title="Supprimer">supprimer</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+            </div>
+        </div>
+
+        <div class="admin-table-container">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Numéro de commande</th>
+                        <th>Client</th>
+                        <th>Date</th>
+                        <th>Total</th>
+                        <th>Articles</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="ordersTableBody">
+                    <tr class="order-row" th:each="order : ${orders}">
+                        <td class="order-number" th:text="${order.orderNumber}">#ORD123456</td>
+                        <td class="order-customer" th:text="${order.customerName}">Client</td>
+                        <td class="order-date" th:text="${#dates.format(order.orderDate, 'dd/MM/yyyy')}">Date</td>
+                        <td class="order-total" th:text="'€ ' + ${order.total}">€150.00</td>
+                        <td class="order-items" th:text="${order.itemCount}">5</td>
+                        <td class="order-status">
+                            <span class="badge" 
+                                th:classappend="${order.status == 'delivered' ? 'status-delivered' : 
+                                    order.status == 'shipped' ? 'status-shipped' : 
+                                    order.status == 'processing' ? 'status-processing' : 
+                                    order.status == 'confirmed' ? 'status-confirmed' : 
+                                    order.status == 'pending' ? 'status-pending' : 
+                                    'status-cancelled'}" 
+                                th:text="${order.statusLabel}">Statut</span>
+                        </td>
+                        <td class="order-actions">
+                            <a th:href="@{/admin/order/{id}(id=${order.id})}" class="btn-view">👁️ Voir</a>
+                            <select class="status-select" th:onchange="'updateOrderStatus(' + ${order.id} + ', this.value)'">
+                                <option value="">Changer le statut</option>
+                                <option value="pending" th:selected="${order.status == 'pending'}">En attente</option>
+                                <option value="confirmed" th:selected="${order.status == 'confirmed'}">Confirmée</option>
+                                <option value="processing" th:selected="${order.status == 'processing'}">En cours</option>
+                                <option value="shipped" th:selected="${order.status == 'shipped'}">Expédiée</option>
+                                <option value="delivered" th:selected="${order.status == 'delivered'}">Livrée</option>
+                                <option value="cancelled" th:selected="${order.status == 'cancelled'}">Annulée</option>
+                            </select>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="noResults" class="no-results" style="display: none;">
+            <p>Aucune commande ne correspond à vos critères de recherche.</p>
+        </div>
+
+        <div class="pagination-controls">
+            <button class="page-btn">← Précédent</button>
+            <span class="page-info">Page 1 sur 5</span>
+            <button class="page-btn">Suivant →</button>
+        </div>
+    </div>
+
+    <script>
+        function updateOrderStatus(orderId, newStatus) {
+            if (!newStatus) return;
+            
+            fetch('/admin/order/' + orderId + '/status', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: newStatus })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Erreur lors de la mise à jour du statut');
+                }
+            });
+        }
+
+        document.getElementById('searchInput').addEventListener('input', filterOrders);
+        document.getElementById('statusFilter').addEventListener('change', filterOrders);
+        document.getElementById('dateFilter').addEventListener('change', filterOrders);
+
+        function filterOrders() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const status = document.getElementById('statusFilter').value;
+            const dateFilter = document.getElementById('dateFilter').value;
+            const rows = document.querySelectorAll('.order-row');
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                const orderNumber = row.querySelector('.order-number').textContent.toLowerCase();
+                const customer = row.querySelector('.order-customer').textContent.toLowerCase();
+                const rowStatus = row.querySelector('.order-status').textContent;
+
+                const matchesSearch = orderNumber.includes(searchTerm) || customer.includes(searchTerm);
+                const matchesStatus = status === '' || rowStatus.includes(status);
+                
+                // Simplified date filter - in production would need proper date handling
+                const matchesDate = dateFilter === '' || true;
+
+                if (matchesSearch && matchesStatus && matchesDate) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            document.getElementById('noResults').style.display = visibleCount === 0 ? 'block' : 'none';
+        }
+    </script>
+
+    <style>
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .page-subtitle {
+            color: #999;
+            font-size: 0.95em;
+            margin-top: 5px;
+        }
+
+        .admin-filter-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .filter-group {
+            margin-bottom: 15px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+
+        .filter-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .filter-select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.95em;
+        }
+
+        .admin-table-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .admin-table thead {
+            background: #f5f5f5;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .admin-table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .admin-table td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .admin-table tbody tr:hover {
+            background: #f9f9f9;
+        }
+
+        .order-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .btn-view {
+            padding: 6px 10px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85em;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-view:hover {
+            background: #2980b9;
+        }
+
+        .status-select {
+            padding: 6px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.85em;
+            cursor: pointer;
+            background: white;
+        }
+
+        .status-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-confirmed {
+            background: #cfe2ff;
+            color: #084298;
+        }
+
+        .status-processing {
+            background: #e2e3e5;
+            color: #383d41;
+        }
+
+        .status-shipped {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-delivered {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-cancelled {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .pagination-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .page-btn {
+            padding: 10px 15px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .page-btn:hover {
+            background: #5568d3;
+        }
+
+        @media (max-width: 768px) {
+            .filter-controls {
+                grid-template-columns: 1fr;
+            }
+
+            .order-actions {
+                flex-direction: column;
+            }
+
+            .admin-table {
+                font-size: 0.9em;
+            }
+
+            .admin-table th, .admin-table td {
+                padding: 10px;
+            }
+        }
+    </style>
+</body>
+</html>

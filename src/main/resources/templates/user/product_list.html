@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List Product</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/user/product-list.css}">
+</head>
+<body class="dashboard-page">
+    <nav class="navbar">
+        <div class="navbar-top">
+            <div class="navbar-logo">Logo</div>
+            <div class="navbar-search">
+                <input type="text" id="searchInput" placeholder="Barre de recherche" class="search-bar">
+            </div>
+            <div class="navbar-actions">
+                <a th:href="@{/user/profile}" class="navbar-link">Profil</a>
+                <a href="#" class="navbar-link">Panier</a>
+            </div>
+        </div>
+        <div class="navbar-categories">
+            <a href="#" class="category-link">Ordinateur</a>
+            <a href="#" class="category-link">smartphone</a>
+            <a href="#" class="category-link">Accessoires</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="list-product-wrapper">
+            <!-- Filtre -->
+            <div class="filter-sidebar">
+                <h3>Filtre:</h3>
+                <div class="filter-search">
+                    <label>Search bar</label>
+                    <input type="text" placeholder="Rechercher..." class="filter-input">
+                </div>
+                <div class="filter-price">
+                    <label>prix min / max</label>
+                    <div class="price-inputs">
+                        <input type="number" placeholder="Min" class="price-min">
+                        <input type="number" placeholder="Max" class="price-max">
+                    </div>
+                </div>
+                <div class="filter-system">
+                    <label>Système</label>
+                    <select class="filter-select">
+                        <option>Tous</option>
+                        <option>Système 1</option>
+                        <option>Système 2</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Produits -->
+            <div class="products-section">
+                <div class="products-list">
+                    <div class="product-row" th:each="product : ${products}">
+                        <div class="product-item-img">Photo</div>
+                        <div class="product-item-info">
+                            <h4 th:text="${product.name}">Titre</h4>
+                            <p th:text="${product.description}">Description</p>
+                        </div>
+                        <div class="product-item-price" th:text="'€ ' + ${product.price}">Prix</div>
+                        <div class="product-item-actions">
+                            <button class="btn-primary">Panier</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pagination">
+                    <span>Pagination</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+</html>

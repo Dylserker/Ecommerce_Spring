@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commande</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #F0F3F5;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: #2C3E50;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #708090 0%, #778899 100%);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 30px;
+            gap: 20px;
+        }
+
+        .navbar-logo {
+            color: #E8E8E8;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .navbar-search {
+            flex: 1;
+            max-width: 300px;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid #D3D3D3;
+            border-radius: 6px;
+            background: white;
+            color: #2C3E50;
+        }
+
+        .navbar-actions {
+            display: flex;
+            gap: 20px;
+        }
+
+        .navbar-link {
+            color: #E8E8E8;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+            font-size: 14px;
+        }
+
+        .navbar-link:hover {
+            color: #B0C4DE;
+        }
+
+        .navbar-categories {
+            display: flex;
+            gap: 20px;
+            padding: 0 30px 15px 30px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .category-link {
+            color: #D3D3D3;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .category-link:hover {
+            color: #B0C4DE;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .cart-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(112,128,144,0.1);
+        }
+
+        .cart-container h2 {
+            color: #708090;
+            margin-bottom: 25px;
+            font-size: 24px;
+            font-weight: 700;
+            border-bottom: 2px solid #B0C4DE;
+            padding-bottom: 15px;
+        }
+
+        .cart-items-section {
+            margin-bottom: 30px;
+        }
+
+        .cart-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .cart-table thead {
+            background: linear-gradient(135deg, #D3D3D3 0%, #C0C0C0 100%);
+        }
+
+        .cart-table th {
+            padding: 15px;
+            text-align: left;
+            color: #2C3E50;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .cart-table tbody tr {
+            border-bottom: 1px solid #E8E8E8;
+            transition: background 0.3s;
+        }
+
+        .cart-table tbody tr:hover {
+            background: #F8F9FA;
+        }
+
+        .cart-table td {
+            padding: 15px;
+            font-size: 14px;
+        }
+
+        .cart-item {
+            color: #2C3E50;
+        }
+
+        .price {
+            color: #708090;
+            font-weight: 700;
+        }
+
+        .quantity {
+            text-align: center;
+        }
+
+        .subtotal {
+            color: #708090;
+            font-weight: 700;
+        }
+
+        .btn-delete {
+            padding: 8px 12px;
+            background: #FFE8E8;
+            color: #C1440E;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+
+        .btn-delete:hover {
+            background: #C1440E;
+            color: white;
+        }
+
+        .cart-summary-section {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, #F0F3F5 0%, #E8EDF2 100%);
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #B0C4DE;
+            min-width: 300px;
+        }
+
+        .summary-card h3 {
+            color: #708090;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .summary-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            color: #2C3E50;
+            font-size: 14px;
+        }
+
+        .summary-line.total {
+            border-top: 2px solid #B0C4DE;
+            padding-top: 15px;
+            font-size: 16px;
+            font-weight: 700;
+            color: #708090;
+        }
+
+        .total-amount {
+            color: #708090;
+            font-weight: 700;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body class="dashboard-page">
+    <nav class="navbar">
+        <div class="navbar-top">
+            <div class="navbar-logo">Logo</div>
+            <div class="navbar-search">
+                <input type="text" id="searchInput" placeholder="Barre de recherche" class="search-bar">
+            </div>
+            <div class="navbar-actions">
+                <a th:href="@{/user/profile}" class="navbar-link">Profil</a>
+                <a href="#" class="navbar-link">Panier</a>
+            </div>
+        </div>
+        <div class="navbar-categories">
+            <a href="#" class="category-link">Ordinateur</a>
+            <a href="#" class="category-link">smartphone</a>
+            <a href="#" class="category-link">Accessoires</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="cart-container">
+            <h2>Votre panier</h2>
+            
+            <div class="cart-items-section">
+                <table class="cart-table">
+                    <thead>
+                        <tr>
+                            <th>Titre (En stock ou non)</th>
+                            <th>Photo</th>
+                            <th>prix</th>
+                            <th>qte</th>
+                            <th>sous total</th>
+                            <th>btn supp</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="item : ${cartItems}" class="cart-item">
+                            <td th:text="${item.product.name}">Titre</td>
+                            <td>Photo</td>
+                            <td class="price" th:text="'€ ' + ${item.product.price}">prix</td>
+                            <td class="quantity" th:text="${item.quantity}">qte</td>
+                            <td class="subtotal" th:text="'€ ' + ${item.quantity * item.product.price}">sous total</td>
+                            <td>
+                                <button class="btn-delete" th:onclick="'removeFromCart(' + ${item.product.id} + ')'" title="Supprimer du panier">Supprimer</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="cart-summary-section">
+                <div class="summary-card">
+                    <h3>Total commande</h3>
+                    <div class="summary-line total">
+                        <span class="total-amount" th:text="'€ ' + ${total}">Total</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+            <div class="cart-items-section">
+                <table class="cart-table">
+                    <thead>
+                        <tr>
+                            <th>Produit</th>
+                            <th>Prix unitaire</th>
+                            <th>Quantité</th>
+                            <th>Sous-total</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="item : ${cartItems}" class="cart-item">
+                            <td class="product-info">
+                                <img th:src="${item.product.imageUrl}" alt="Produit" class="cart-item-img">
+                                <div>
+                                    <strong th:text="${item.product.name}">Nom du produit</strong>
+                                    <p class="product-sku" th:text="'SKU: ' + ${item.product.sku}">SKU</p>
+                                </div>
+                            </td>
+                            <td class="price" th:text="'€ ' + ${item.product.price}">Prix</td>
+                            <td class="quantity">
+                                <div class="qty-controls">
+                                    <button class="qty-btn" th:onclick="'updateQuantity(' + ${item.product.id} + ', -1)'" data-product-id="1">−</button>
+                                    <input type="number" th:value="${item.quantity}" th:data-product-id="${item.product.id}" min="1" class="qty-input">
+                                    <button class="qty-btn" th:onclick="'updateQuantity(' + ${item.product.id} + ', 1)'" data-product-id="1">+</button>
+                                </div>
+                            </td>
+                            <td class="subtotal" th:text="'€ ' + ${item.quantity * item.product.price}">Sous-total</td>
+                            <td class="action">
+                                <button class="btn-delete" th:onclick="'removeFromCart(' + ${item.product.id} + ')'" title="Supprimer du panier">🗑 Supprimer</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="cart-summary-section">
+                <div class="summary-card">
+                    <h2>Résumé de la commande</h2>
+                    
+                    <div class="promo-code">
+                        <input type="text" id="promoCode" placeholder="Code promotionnel" class="promo-input">
+                        <button onclick="applyPromo()" class="btn-secondary">Appliquer</button>
+                    </div>
+
+                    <div class="summary-details">
+                        <div class="summary-line">
+                            <span>Sous-total (<span th:text="${cartItems.size()}">0</span> articles):</span>
+                            <span class="subtotal-amount" th:text="'€ ' + ${subtotal}">0,00€</span>
+                        </div>
+                        <div class="summary-line" id="discountLine" style="display: none;">
+                            <span>Réduction:</span>
+                            <span class="discount-amount" id="discountAmount">- €0,00</span>
+                        </div>
+                        <div class="summary-line">
+                            <span>Livraison:</span>
+                            <span class="shipping-amount" id="shippingAmount">€9,99</span>
+                        </div>
+                        <div class="summary-line">
+                            <span>TVA (20%):</span>
+                            <span class="tax-amount" th:text="'€ ' + ${tax}">Calculée</span>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="summary-line total">
+                        <span>Total:</span>
+                        <span class="total-amount" th:text="'€ ' + ${total}">0,00€</span>
+                    </div>
+
+                    <button onclick="checkout()" class="btn-primary btn-lg" style="width: 100%; margin-top: 20px;">
+                        Procéder au paiement
+                    </button>
+                    <a th:href="@{/user/products}" class="btn-secondary" style="display: block; text-align: center; margin-top: 10px; text-decoration: none;">
+                        ← Continuer vos achats
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="empty-cart" th:if="${cartEmpty}">
+            <div class="empty-message">
+                <h2>Votre panier est vide</h2>
+                <p>Commencez à ajouter des produits pour remplir votre panier.</p>
+                <a th:href="@{/user/products}" class="btn-primary">Voir les produits</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateQuantity(productId, change) {
+            const input = document.querySelector(`input[data-product-id="${productId}"]`);
+            let newValue = parseInt(input.value) + change;
+            if (newValue > 0) {
+                input.value = newValue;
+                updateCart();
+            }
+        }
+
+        function removeFromCart(productId) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer cet article?')) {
+                fetch('/user/cart/remove/' + productId, {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    }
+                });
+            }
+        }
+
+        function updateCart() {
+            const items = [];
+            document.querySelectorAll('.cart-item').forEach(row => {
+                const productId = row.querySelector('input[data-product-id]').dataset.productId;
+                const quantity = parseInt(row.querySelector('input[data-product-id]').value);
+                items.push({productId, quantity});
+            });
+
+            fetch('/user/cart/update', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({items})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                }
+            });
+        }
+
+        function applyPromo() {
+            const code = document.getElementById('promoCode').value;
+            fetch('/user/cart/apply-promo', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({code})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Code promotionnel appliqué avec succès!');
+                    location.reload();
+                } else {
+                    alert('Code promotionnel invalide');
+                }
+            });
+        }
+
+        function checkout() {
+            window.location.href = '/user/payment';
+        }
+    </script>
+
+    <style>
+        .cart-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .cart-items-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .cart-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .cart-table thead {
+            border-bottom: 2px solid #ddd;
+        }
+
+        .cart-table th {
+            text-align: left;
+            padding: 15px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .cart-table td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .product-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .cart-item-img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .product-sku {
+            font-size: 0.85em;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        .qty-controls {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .qty-btn {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #ddd;
+            background: #f5f5f5;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .qty-input {
+            width: 60px;
+            text-align: center;
+            border: 1px solid #ddd;
+            padding: 5px;
+            border-radius: 4px;
+        }
+
+        .btn-delete {
+            padding: 8px 12px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .btn-delete:hover {
+            background: #c0392b;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .summary-card h2 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .promo-code {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .promo-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .summary-details {
+            margin-bottom: 20px;
+        }
+
+        .summary-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            color: #666;
+        }
+
+        .summary-line.total {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .empty-message h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .empty-message p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .cart-container {
+                grid-template-columns: 1fr;
+            }
+
+            .cart-table {
+                font-size: 0.9em;
+            }
+
+            .cart-table td, .cart-table th {
+                padding: 10px;
+            }
+        }
+    </style>
+</body>
+</html>
+        }
+
+        .cart-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .cart-table th {
+            background-color: #f5f5f5;
+            padding: 15px;
+            text-align: left;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .cart-table td {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .qty-input {
+            width: 60px;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .btn-delete {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-delete:hover {
+            background-color: #c0392b;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            height: fit-content;
+        }
+
+        .summary-card h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .summary-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .summary-line.total {
+            font-size: 1.3em;
+            font-weight: bold;
+            border-bottom: none;
+            margin-top: 10px;
+            padding-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .cart-content {
+                grid-template-columns: 1fr;
+            }
+
+            .cart-table {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</body>
+</html>

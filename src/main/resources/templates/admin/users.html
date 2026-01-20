@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard admin - crud utilisateur</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/users.css}">
+</head>
+<body class="dashboard-page">
+    <nav class="navbar">
+        <div class="navbar-top">
+            <div class="navbar-logo">Logo</div>
+            <div class="navbar-search">
+                <input type="text" id="searchInput" placeholder="Barre de recherche" class="search-bar">
+            </div>
+            <div class="navbar-actions">
+                <a href="#" class="navbar-link">Profil</a>
+                <a href="#" class="navbar-link">Panier</a>
+            </div>
+        </div>
+        <div class="navbar-categories">
+            <a href="#" class="category-link">Ordinateur</a>
+            <a href="#" class="category-link">smartphone</a>
+            <a href="#" class="category-link">Accessoires</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="admin-table-container">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>nom / prénom</th>
+                        <th>rôle</th>
+                        <th>email</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                    <tr class="user-row" th:each="user : ${users}">
+                        <td class="user-name" th:text="${user.firstName} + ' / ' + ${user.lastName}">nom / prénom</td>
+                        <td class="user-role" th:text="${user.role}">rôle</td>
+                        <td class="user-email" th:text="${user.email}">email</td>
+                        <td class="user-actions">
+                            <button class="btn-edit" th:onclick="'editUser(' + ${user.id} + ')'" title="Éditer">Modifier</button>
+                            <button class="btn-delete" th:onclick="'deleteUser(' + ${user.id} + ')'" title="Supprimer">supprimer</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+        <div id="noResults" class="no-results" style="display: none;">
+            <p>Aucun utilisateur ne correspond à vos critères de recherche.</p>
+        </div>
+
+        <!-- Barre d'actions en masse -->
+        <div class="bulk-actions" id="bulkActions" style="display: none;">
+            <span id="selectedCount">0 utilisateurs sélectionnés</span>
+            <button class="btn-secondary" onclick="bulkChangeRole()">Changer le rôle</button>
+            <button class="btn-warning" onclick="bulkDeactivate()">Désactiver</button>
+            <button class="btn-danger" onclick="bulkBan()">Bannir</button>
+        </div>
+
+        <div class="pagination-controls">
+            <button class="page-btn">← Précédent</button>
+            <span class="page-info">Page 1 sur 5</span>
+            <button class="page-btn">Suivant →</button>
+        </div>
+    </div>
+
+    <script>
+        function toggleSelectAll() {
+            const checked = document.getElementById('selectAll').checked;
+            document.querySelectorAll('.user-checkbox').forEach(cb => cb.checked = checked);
+            updateBulkActionsDisplay();
+        }
+
+        function updateBulkActionsDisplay() {
+            const selected = document.querySelectorAll('.user-checkbox:checked').length;
+            const bulkActions = document.getElementById('bulkActions');
+            if (selected > 0) {
+                bulkActions.style.display = 'flex';
+                document.getElementById('selectedCount').textContent = selected + ' utilisateur(s) sélectionné(s)';
+            } else {
+                bulkActions.style.display = 'none';
+            }
+        }
+
+        document.querySelectorAll('.user-checkbox').forEach(cb => {
+            cb.addEventListener('change', updateBulkActionsDisplay);
+        });
+
+        function deleteUser(userId) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur?')) {
+                fetch('/admin/user/' + userId, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    }
+                });
+            }
+        }
+
+        function editUser(userId) {
+            window.location.href = '/admin/user/' + userId + '/edit';
+        }
+
+        function bulkChangeRole() {
+            const selected = Array.from(document.querySelectorAll('.user-checkbox:checked')).map(cb => cb.value);
+            window.location.href = '/admin/users/bulk-role?ids=' + selected.join(',');
+        }
+
+        function bulkDeactivate() {
+            const selected = Array.from(document.querySelectorAll('.user-checkbox:checked')).map(cb => cb.value);
+            fetch('/admin/users/bulk-deactivate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userIds: selected })
+            }).then(() => location.reload());
+        }
+
+        function bulkBan() {
+            if (confirm('Êtes-vous sûr de vouloir bannir ces utilisateurs?')) {
+                const selected = Array.from(document.querySelectorAll('.user-checkbox:checked')).map(cb => cb.value);
+                fetch('/admin/users/bulk-ban', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userIds: selected })
+                }).then(() => location.reload());
+            }
+        }
+
+        document.getElementById('searchInput').addEventListener('input', filterUsers);
+        document.getElementById('roleFilter').addEventListener('change', filterUsers);
+        document.getElementById('statusFilter').addEventListener('change', filterUsers);
+
+        function filterUsers() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const role = document.getElementById('roleFilter').value;
+            const status = document.getElementById('statusFilter').value;
+            const rows = document.querySelectorAll('.user-row');
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                const name = row.querySelector('.user-name').textContent.toLowerCase();
+                const email = row.querySelector('.user-email').textContent.toLowerCase();
+                const rowRole = row.querySelector('.user-role').textContent;
+                const rowStatus = row.querySelector('.user-status').textContent;
+
+                const matchesSearch = name.includes(searchTerm) || email.includes(searchTerm);
+                const matchesRole = role === '' || rowRole.includes(role === 'admin' ? 'Admin' : 'Client');
+                const matchesStatus = status === '' ||
+                    (status === 'active' && rowStatus.includes('Actif')) ||
+                    (status === 'inactive' && rowStatus.includes('Inactif')) ||
+                    (status === 'banned' && rowStatus.includes('Banni'));
+
+                if (matchesSearch && matchesRole && matchesStatus) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            document.getElementById('noResults').style.display = visibleCount === 0 ? 'block' : 'none';
+        }
+    </script>
+
+    <style>
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .page-subtitle {
+            color: #999;
+            font-size: 0.95em;
+            margin-top: 5px;
+        }
+
+        .admin-filter-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .filter-group {
+            margin-bottom: 15px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+
+        .filter-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .filter-select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.95em;
+        }
+
+        .admin-table-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .admin-table thead {
+            background: #f5f5f5;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .admin-table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .admin-table td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .admin-table tbody tr:hover {
+            background: #f9f9f9;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-view, .btn-edit, .btn-delete, .btn-warning {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85em;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-view {
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-view:hover {
+            background: #2980b9;
+        }
+
+        .btn-edit {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #5568d3;
+        }
+
+        .btn-delete {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #c0392b;
+        }
+
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #d68910;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .badge-user {
+            background: #cfe2ff;
+            color: #084298;
+        }
+
+        .badge-admin {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .badge-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-inactive {
+            background: #e2e3e5;
+            color: #383d41;
+        }
+
+        .badge-banned {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .bulk-actions {
+            background: #e8f4f8;
+            border: 1px solid #b8dce6;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        #selectedCount {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .btn-secondary {
+            padding: 8px 15px;
+            background: #95a5a6;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        .pagination-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .page-btn {
+            padding: 10px 15px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .page-btn:hover {
+            background: #5568d3;
+        }
+
+        @media (max-width: 768px) {
+            .filter-controls {
+                grid-template-columns: 1fr;
+            }
+
+            .user-actions {
+                flex-direction: column;
+            }
+
+            .admin-table {
+                font-size: 0.9em;
+            }
+
+            .admin-table th, .admin-table td {
+                padding: 10px;
+            }
+        }
+    </style>
+</body>
+</html>

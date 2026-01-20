@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil - Mon compte</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/user/profile.css}">
+</head>
+<body class="dashboard-page">
+            <nav class="navbar">
+                <div class="navbar-top">
+                    <div class="navbar-logo">Logo</div>
+                    <div class="navbar-search">
+                        <input type="text" id="searchInput" placeholder="Barre de recherche" class="search-bar">
+                    </div>
+                    <div class="navbar-actions">
+                        <a th:href="@{/user/profile}" class="navbar-link">Profil</a>
+                        <a th:href="@{/user/cart}" class="navbar-link">Panier</a>
+                    </div>
+                </div>
+                <div class="navbar-categories">
+                    <a href="#" class="category-link">Ordinateur</a>
+                    <a href="#" class="category-link">smartphone</a>
+                    <a href="#" class="category-link">Accessoires</a>
+                </div>
+            </nav>
+
+            <div class="container">
+                <div class="profile-container">
+                    <div class="profile-sidebar">
+                        <div class="profile-pic">Photo</div>
+                        <div class="profile-title">M / Mme</div>
+                        <div class="profile-name">Nom et prénom</div>
+                        <button class="btn-secondary">Déconnecter</button>
+                    </div>
+
+                    <div class="v-tabs-nav">
+                        <button class="v-tab-btn active" onclick="switchVTab('information', event)">Informations</button>
+                        <button class="v-tab-btn" onclick="switchVTab('addresses', event)">Adresses</button>
+                        <button class="v-tab-btn" onclick="switchVTab('orders', event)">Commandes</button>
+                    </div>
+
+                    <div class="profile-content">
+                        <div class="v-tabs-panel">
+                                <!-- Section Informations -->
+                                <div id="information" class="profile-section tab-content active">
+                                    <h2 class="section-title">Informations</h2>
+                                    <div class="profile-info">
+                                        <div class="info-group">
+                                            <div class="info-label">Prénom</div>
+                                            <div class="info-value">Prénom</div>
+                                        </div>
+                                        <div class="info-group">
+                                            <div class="info-label">Nom</div>
+                                            <div class="info-value">Nom</div>
+                                        </div>
+                                        <div class="info-group">
+                                            <div class="info-label">Email</div>
+                                            <div class="info-value">Email</div>
+                                        </div>
+                                        <div class="info-group">
+                                            <div class="info-label">Date de naissance</div>
+                                            <div class="info-value">Date de naissance</div>
+                                        </div>
+                                    </div>
+                                    <div class="profile-actions" style="margin-top: 10px;">
+                                        <button class="btn-secondary">changer de mot de passe</button>
+                                        <button class="btn-danger">supprimer le compte</button>
+                                    </div>
+                                </div>
+
+                                <!-- Section Adresses -->
+                                <div id="addresses" class="profile-section tab-content">
+                                    <h2 class="section-title">Adresses</h2>
+                                    <div class="addresses-section">
+                                        <div class="address-card">
+                                            <h3>Adresse de facturation</h3>
+                                            <div class="address-info">
+                                                <p>Nom prénom</p>
+                                                <p>Adresse complète</p>
+                                                <p>Téléphone</p>
+                                            </div>
+                                            <div class="address-actions">
+                                                <button class="btn-secondary">Modifier</button>
+                                                <button class="btn-danger">Supprimer</button>
+                                            </div>
+                                        </div>
+
+                                        <div class="address-card">
+                                            <h3>Adresse de livraison</h3>
+                                            <div class="address-info">
+                                                <p>Nom prénom</p>
+                                                <p>Adresse complète</p>
+                                                <p>Téléphone</p>
+                                            </div>
+                                            <div class="address-actions">
+                                                <button class="btn-secondary">Modifier</button>
+                                                <button class="btn-danger">Supprimer</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Section Commandes -->
+                                <div id="orders" class="profile-section tab-content">
+                                    <h2 class="section-title">Commandes</h2>
+                                    <div class="orders-section">
+                                        <table class="orders-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>commande n°</th>
+                                                    <th>commandé effectué le</th>
+                                                    <th>montant total</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr th:each="order : ${orders}">
+                                                    <td th:text="${order.orderNumber}">commande n°</td>
+                                                    <td th:text="${#dates.format(order.orderDate, 'dd/MM/yyyy')}">commandé effectué le</td>
+                                                    <td th:text="'€ ' + ${order.total}">montant total</td>
+                                                    <td>
+                                                        <a href="#" class="btn-secondary" style="display: inline-block; padding: 6px 12px; font-size: 12px; text-decoration: none;">Détail</a>
+                                                        <button class="btn-secondary" style="padding: 6px 12px; font-size: 12px;">imprimer la facture</button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                function switchVTab(tabId, ev) {
+                    // Toggle active class on buttons
+                    document.querySelectorAll('.v-tab-btn').forEach(btn => btn.classList.remove('active'));
+                    if (ev && ev.currentTarget) ev.currentTarget.classList.add('active');
+
+                    // Show the selected tab content
+                    document.querySelectorAll('.tab-content').forEach(p => p.classList.remove('active'));
+                    const target = document.getElementById(tabId);
+                    if (target) target.classList.add('active');
+                }
+                </script>
+
+            </body>
+            </html>
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-processing {
+            background: #cfe2ff;
+            color: #084298;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .security-form {
+            max-width: 500px;
+        }
+
+        .two-fa-section,
+        .sessions-list,
+        .danger-section {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+            cursor: pointer;
+        }
+
+        .checkbox-label input {
+            cursor: pointer;
+        }
+
+        .session-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .session-info p {
+            margin: 2px 0;
+        }
+
+        .device {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .location {
+            font-size: 0.9em;
+            color: #999;
+        }
+
+        @media (max-width: 768px) {
+            .profile-tabs {
+                flex-direction: column;
+            }
+
+            .tab-btn {
+                text-align: left;
+                border-bottom: none;
+                border-left: 3px solid transparent;
+            }
+
+            .tab-btn.active {
+                border-left-color: #667eea;
+                border-bottom: none;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .addresses-section,
+            .payment-methods,
+            .wishlist-items {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</body>
+</html>

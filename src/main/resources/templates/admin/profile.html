@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Profil & Paramètres</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/profile.css}">
+</head>
+<body class="dashboard-page">
+    <nav class="navbar">
+        <h2>⚙️ Paramètres Administrateur</h2>
+        <div class="nav-links">
+            <a th:href="@{/admin/dashboard}">Dashboard</a>
+            <a th:href="@{/admin/users}">Utilisateurs</a>
+            <a th:href="@{/admin/products}">Produits</a>
+            <a th:href="@{/admin/orders}">Commandes</a>
+            <a th:href="@{/admin/profile}" class="active">Profil</a>
+            <a th:href="@{/admin/logout}">Déconnexion</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="admin-profile-container">
+            <!-- Tabs -->
+            <div class="profile-tabs">
+                <button class="tab-btn active" onclick="switchTab('profile')">👤 Mon Profil</button>
+                <button class="tab-btn" onclick="switchTab('security')">🔐 Sécurité</button>
+                <button class="tab-btn" onclick="switchTab('activity')">📊 Activité</button>
+                <button class="tab-btn" onclick="switchTab('settings')">⚙️ Paramètres</button>
+            </div>
+
+            <!-- Onglet Profil -->
+            <div id="profile" class="tab-content active">
+                <h2>Mon Profil Administrateur</h2>
+                <form th:action="@{/admin/profile}" method="post" class="profile-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="name">Nom complet</label>
+                            <input type="text" id="name" name="name" th:value="${admin.name}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" th:value="${admin.email}" required readonly style="background-color: #f5f5f5;">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="phone">Téléphone</label>
+                            <input type="tel" id="phone" name="phone" th:value="${admin.phone}" placeholder="+33 1 23 45 67 89">
+                        </div>
+                        <div class="form-group">
+                            <label for="role">Rôle</label>
+                            <input type="text" id="role" name="role" th:value="${admin.role}" readonly style="background-color: #f5f5f5;">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="company">Entreprise</label>
+                        <input type="text" id="company" name="company" th:value="${admin.company}" placeholder="Nom de l'entreprise">
+                    </div>
+                    <div class="form-group">
+                        <label for="bio">Biographie</label>
+                        <textarea id="bio" name="bio" rows="3" placeholder="Parlez-nous de vous..." th:text="${admin.bio}"></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary">💾 Enregistrer</button>
+                </form>
+            </div>
+
+            <!-- Onglet Sécurité -->
+            <div id="security" class="tab-content">
+                <h2>Paramètres de sécurité</h2>
+
+                <div class="security-section">
+                    <h3>Changer le mot de passe</h3>
+                    <form th:action="@{/admin/profile/change-password}" method="post">
+                        <div class="form-group">
+                            <label for="oldPassword">Mot de passe actuel</label>
+                            <input type="password" id="oldPassword" name="oldPassword" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="newPassword">Nouveau mot de passe</label>
+                            <input type="password" id="newPassword" name="newPassword" required>
+                            <small>Minimum 8 caractères, avec majuscules et chiffres</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirmer le mot de passe</label>
+                            <input type="password" id="confirmPassword" name="confirmPassword" required>
+                        </div>
+                        <button type="submit" class="btn-primary">🔐 Changer le mot de passe</button>
+                    </form>
+                </div>
+
+                <div class="security-section">
+                    <h3>Authentification à deux facteurs (2FA)</h3>
+                    <p>Renforcez la sécurité de votre compte administrateur avec la 2FA.</p>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="twoFAEnabled" th:checked="${admin.twoFAEnabled}">
+                        <span>Activer l'authentification à deux facteurs par SMS</span>
+                    </label>
+                    <button type="button" class="btn-secondary" onclick="setupTwoFA()">📱 Configurer</button>
+                </div>
+
+                <div class="security-section">
+                    <h3>Sessions actives</h3>
+                    <div class="sessions-list">
+                        <div class="session-item">
+                            <div>
+                                <p class="device">🖥️ Navigateur actuel (Chrome sur Windows)</p>
+                                <p class="location">Paris, France • 192.168.1.100</p>
+                                <p class="time">Actif maintenant</p>
+                            </div>
+                            <span class="badge badge-active">Actuelle</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Onglet Activité -->
+            <div id="activity" class="tab-content">
+                <h2>Journal d'activité administrateur</h2>
+                <div class="activity-log">
+                    <div class="activity-item" th:each="activity : ${admin.activityLog}">
+                        <div class="activity-icon" th:text="${activity.icon}">🔄</div>
+                        <div class="activity-details">
+                            <h4 th:text="${activity.action}">Action effectuée</h4>
+                            <p th:text="${activity.details}">Détails de l'action</p>
+                            <small th:text="${#dates.format(activity.timestamp, 'dd/MM/yyyy HH:mm')}">01/01/2024 14:30</small>
+                        </div>
+                        <span class="activity-time" th:text="${activity.relativeTime}">Il y a 2h</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Onglet Paramètres -->
+            <div id="settings" class="tab-content">
+                <h2>Paramètres d'administration</h2>
+
+                <div class="settings-section">
+                    <h3>Paramètres généraux du site</h3>
+                    <form th:action="@{/admin/settings}" method="post" class="settings-form">
+                        <div class="form-group">
+                            <label for="siteTitle">Titre du site</label>
+                            <input type="text" id="siteTitle" name="siteTitle" th:value="${settings.siteTitle}">
+                        </div>
+                        <div class="form-group">
+                            <label for="siteMail">Email du support</label>
+                            <input type="email" id="siteMail" name="siteMail" th:value="${settings.supportEmail}">
+                        </div>
+                        <div class="form-group">
+                            <label for="currency">Devise</label>
+                            <select id="currency" name="currency">
+                                <option value="EUR" th:selected="${settings.currency == 'EUR'}">Euro (€)</option>
+                                <option value="USD" th:selected="${settings.currency == 'USD'}">Dollar ($)</option>
+                                <option value="GBP" th:selected="${settings.currency == 'GBP'}">Livre (£)</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-primary">💾 Enregistrer</button>
+                    </form>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Paramètres des commandes</h3>
+                    <form th:action="@{/admin/settings/orders}" method="post" class="settings-form">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="autoConfirm" name="autoConfirmOrders" th:checked="${settings.autoConfirmOrders}">
+                            <span>Confirmer automatiquement les commandes</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="autoShip" name="autoShipOrders" th:checked="${settings.autoShipOrders}">
+                            <span>Marquer automatiquement comme expédié après 24h</span>
+                        </label>
+                        <div class="form-group">
+                            <label for="shippingCost">Frais de port par défaut (€)</label>
+                            <input type="number" id="shippingCost" name="defaultShippingCost" th:value="${settings.defaultShippingCost}" min="0" step="0.01">
+                        </div>
+                        <button type="submit" class="btn-primary">💾 Enregistrer</button>
+                    </form>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Notifications</h3>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="emailNotif" checked>
+                        <span>Recevoir les notifications par email</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="orderNotif" checked>
+                        <span>Notification pour chaque nouvelle commande</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="stockNotif" checked>
+                        <span>Notification pour le stock faible</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function setupTwoFA() {
+            alert('Configuration 2FA - Redirection vers la page de configuration');
+        }
+    </script>
+
+    <style>
+        .admin-profile-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .profile-tabs {
+            display: flex;
+            background: #f5f5f5;
+            border-bottom: 2px solid #ddd;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 0.95em;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab-btn:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .tab-btn.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 30px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .profile-form,
+        .settings-form {
+            max-width: 600px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+
+        .form-group small {
+            color: #999;
+            font-size: 0.9em;
+            margin-top: 3px;
+        }
+
+        .security-section,
+        .settings-section {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .security-section h3,
+        .settings-section h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+            cursor: pointer;
+        }
+
+        .checkbox-label input {
+            cursor: pointer;
+        }
+
+        .sessions-list {
+            background: white;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+
+        .session-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .device,
+        .location,
+        .time {
+            margin: 2px 0;
+        }
+
+        .device {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .location,
+        .time {
+            font-size: 0.9em;
+            color: #999;
+        }
+
+        .activity-log {
+            margin-top: 20px;
+        }
+
+        .activity-item {
+            display: flex;
+            gap: 15px;
+            padding: 15px;
+            border-left: 3px solid #667eea;
+            background: #f9f9f9;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        .activity-icon {
+            font-size: 1.5em;
+        }
+
+        .activity-details h4 {
+            margin: 0 0 5px 0;
+        }
+
+        .activity-details p {
+            margin: 5px 0;
+            color: #666;
+        }
+
+        .activity-details small {
+            color: #999;
+        }
+
+        .activity-time {
+            font-size: 0.85em;
+            color: #999;
+            align-self: center;
+        }
+
+        @media (max-width: 768px) {
+            .profile-tabs {
+                flex-direction: column;
+            }
+
+            .tab-btn {
+                text-align: left;
+                border-bottom: none;
+                border-left: 3px solid transparent;
+            }
+
+            .tab-btn.active {
+                border-left-color: #667eea;
+                border-bottom: none;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</body>
+</html>

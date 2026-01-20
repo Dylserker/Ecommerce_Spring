@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paiement - E-commerce</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="dashboard-page">
+    <nav class="navbar">
+        <h2>E-commerce - Paiement</h2>
+        <div class="nav-links">
+            <a th:href="@{/user/dashboard}">Dashboard</a>
+            <a th:href="@{/user/products}">Boutique</a>
+            <a th:href="@{/user/cart}">Panier</a>
+            <a th:href="@{/user/logout}">Déconnexion</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>Finaliser votre achat</h1>
+
+        <div class="payment-content">
+            <div class="payment-form-section">
+                <form th:action="@{/user/payment}" method="post" class="payment-form">
+                    <div class="form-section">
+                        <h2>Adresse de livraison</h2>
+                        <div class="form-group">
+                            <label for="name">Nom complet:</label>
+                            <input type="text" id="name" name="name" required placeholder="Jean Dupont">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email:</label>
+                            <input type="email" id="email" name="email" required placeholder="jean@exemple.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Téléphone:</label>
+                            <input type="tel" id="phone" name="phone" required placeholder="06 12 34 56 78">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="address">Adresse:</label>
+                                <input type="text" id="address" name="address" required placeholder="123 Rue de l'Exemple">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="city">Ville:</label>
+                                <input type="text" id="city" name="city" required placeholder="Paris">
+                            </div>
+                            <div class="form-group">
+                                <label for="zip">Code postal:</label>
+                                <input type="text" id="zip" name="zip" required placeholder="75000">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="country">Pays:</label>
+                            <select id="country" name="country" required>
+                                <option value="France">France</option>
+                                <option value="Belgique">Belgique</option>
+                                <option value="Suisse">Suisse</option>
+                                <option value="Luxembourg">Luxembourg</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h2>Mode de livraison</h2>
+                        <div class="shipping-options">
+                            <label class="shipping-option">
+                                <input type="radio" name="shipping" value="standard" checked>
+                                <span class="option-label">
+                                    <strong>Livraison Standard</strong>
+                                    <span class="option-info">5-7 jours ouvrables</span>
+                                </span>
+                                <span class="option-price">Gratuit</span>
+                            </label>
+                            <label class="shipping-option">
+                                <input type="radio" name="shipping" value="express">
+                                <span class="option-label">
+                                    <strong>Livraison Express</strong>
+                                    <span class="option-info">2-3 jours ouvrables</span>
+                                </span>
+                                <span class="option-price">€14,99</span>
+                            </label>
+                            <label class="shipping-option">
+                                <input type="radio" name="shipping" value="overnight">
+                                <span class="option-label">
+                                    <strong>Livraison Next Day</strong>
+                                    <span class="option-info">Livraison le lendemain</span>
+                                </span>
+                                <span class="option-price">€29,99</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h2>Informations de paiement</h2>
+                        <div class="payment-methods">
+                            <label class="payment-method">
+                                <input type="radio" name="paymentMethod" value="card" checked>
+                                <span>💳 Carte bancaire</span>
+                            </label>
+                            <label class="payment-method">
+                                <input type="radio" name="paymentMethod" value="paypal">
+                                <span>🅿 PayPal</span>
+                            </label>
+                            <label class="payment-method">
+                                <input type="radio" name="paymentMethod" value="transfer">
+                                <span>🏦 Virement bancaire</span>
+                            </label>
+                        </div>
+
+                        <div id="cardPayment" class="payment-details">
+                            <div class="form-group">
+                                <label for="card-name">Titulaire de la carte:</label>
+                                <input type="text" id="card-name" name="cardName" required placeholder="Jean Dupont">
+                            </div>
+                            <div class="form-group">
+                                <label for="card-number">Numéro de carte:</label>
+                                <input type="text" id="card-number" name="cardNumber" placeholder="1234 5678 9012 3456" required maxlength="19">
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="expiry">Date d'expiration:</label>
+                                    <input type="text" id="expiry" name="expiry" placeholder="MM/YY" required pattern="\d{2}/\d{2}" maxlength="5">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cvv">CVV:</label>
+                                    <input type="text" id="cvv" name="cvv" placeholder="123" required maxlength="4">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section checkbox-group">
+                        <input type="checkbox" id="terms" name="terms" required>
+                        <label for="terms">J'accepte les conditions générales de vente et la politique de confidentialité</label>
+                    </div>
+                    <div class="form-section checkbox-group">
+                        <input type="checkbox" id="newsletter" name="newsletter">
+                        <label for="newsletter">M'inscrire à la newsletter pour recevoir les offres exclusives</label>
+                    </div>
+
+                    <button type="submit" class="btn-primary btn-lg" style="width: 100%; padding: 15px; font-size: 1.1em;">Payer maintenant</button>
+                </form>
+            </div>
+
+            <div class="order-summary-section">
+                <div class="summary-card">
+                    <h2>Résumé de commande</h2>
+                    
+                    <div class="order-items-list">
+                        <div class="order-item" th:each="item : ${orderItems}">
+                            <div class="item-info">
+                                <span class="item-name" th:text="${item.product.name}">Produit</span>
+                                <span class="item-qty" th:text="'x' + ${item.quantity}">x1</span>
+                            </div>
+                            <span class="item-price" th:text="'€ ' + ${item.quantity * item.product.price}">Prix</span>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="summary-details">
+                        <div class="summary-line">
+                            <span>Sous-total:</span>
+                            <span th:text="'€ ' + ${subtotal}">0,00€</span>
+                        </div>
+                        <div class="summary-line">
+                            <span>Livraison:</span>
+                            <span id="shippingCost">Gratuit</span>
+                        </div>
+                        <div class="summary-line">
+                            <span>TVA (20%):</span>
+                            <span th:text="'€ ' + ${tax}">Calculée</span>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="summary-line total">
+                        <span>Total:</span>
+                        <span id="totalAmount" th:text="'€ ' + ${total}">0,00€</span>
+                    </div>
+
+                    <div class="order-info">
+                        <p><strong>Numéro de commande:</strong> <span th:text="${orderId}">TEMPX2024xxxxx</span></p>
+                        <p><strong>Date:</strong> <span th:text="${#dates.format(#dates.createNow(), 'dd/MM/yyyy')}">Date</span></p>
+                    </div>
+
+                    <div class="security-badges">
+                        <span class="badge">🔒 Paiement sécurisé SSL</span>
+                        <span class="badge">✓ Données chiffrées</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mise à jour du coût de livraison selon la sélection
+        document.querySelectorAll('input[name="shipping"]').forEach(input => {
+            input.addEventListener('change', function() {
+                let cost = 'Gratuit';
+                if (this.value === 'express') cost = '€14,99';
+                if (this.value === 'overnight') cost = '€29,99';
+                document.getElementById('shippingCost').textContent = cost;
+            });
+        });
+
+        // Affichage/masquage des détails de paiement selon la méthode
+        document.querySelectorAll('input[name="paymentMethod"]').forEach(input => {
+            input.addEventListener('change', function() {
+                const cardPayment = document.getElementById('cardPayment');
+                cardPayment.style.display = this.value === 'card' ? 'block' : 'none';
+            });
+        });
+
+        // Formatage du numéro de carte
+        document.getElementById('card-number').addEventListener('input', function() {
+            this.value = this.value.replace(/\s/g, '').replace(/(.{4})/g, '$1 ').trim();
+        });
+
+        // Formatage du CVV
+        document.getElementById('cvv').addEventListener('input', function() {
+            this.value = this.value.replace(/\D/g, '').substring(0, 4);
+        });
+    </script>
+
+    <style>
+        .payment-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .payment-form-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .form-section h2 {
+            font-size: 1.2em;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+        }
+
+        .shipping-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .shipping-option {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border: 2px solid #eee;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        .shipping-option:hover {
+            border-color: #667eea;
+        }
+
+        .shipping-option input {
+            width: auto;
+        }
+
+        .shipping-option input:checked ~ .option-label {
+            color: #667eea;
+        }
+
+        .option-label {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .option-info {
+            font-size: 0.85em;
+            color: #999;
+        }
+
+        .option-price {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .payment-methods {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .payment-method {
+            padding: 15px;
+            border: 2px solid #eee;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+            transition: border-color 0.3s;
+        }
+
+        .payment-method:hover {
+            border-color: #667eea;
+        }
+
+        .payment-method input {
+            display: none;
+        }
+
+        .payment-method input:checked + span {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .checkbox-group input {
+            width: auto;
+        }
+
+        .checkbox-group label {
+            margin-bottom: 0;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 20px;
+        }
+
+        .order-items-list {
+            margin-bottom: 20px;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .item-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .item-qty {
+            font-size: 0.85em;
+            color: #999;
+        }
+
+        .summary-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            color: #666;
+        }
+
+        .summary-line.total {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-top: 10px;
+        }
+
+        .order-info {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 15px;
+            font-size: 0.9em;
+        }
+
+        .order-info p {
+            margin: 5px 0;
+        }
+
+        .security-badges {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            font-size: 0.85em;
+        }
+
+        .badge {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .payment-content {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .payment-methods {
+                grid-template-columns: 1fr;
+            }
+
+            .summary-card {
+                position: static;
+            }
+        }
+    </style>
+</body>
+</html>
+                        <div class="order-item">
+                            <span>Produit 2 x1</span>
+                            <span>49.99€</span>
+                        </div>
+                        <div class="order-item">
+                            <span>Produit 3 x3</span>
+                            <span>119.97€</span>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="summary-line">
+                        <span>Sous-total:</span>
+                        <span>229.94€</span>
+                    </div>
+                    <div class="summary-line">
+                        <span>Livraison:</span>
+                        <span>9.99€</span>
+                    </div>
+                    <div class="summary-line">
+                        <span>TVA (20%):</span>
+                        <span>47.99€</span>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="summary-line total">
+                        <span>Total:</span>
+                        <span>287.92€</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .payment-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .payment-form {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .payment-form h2 {
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .checkbox-group input {
+            width: auto;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            height: fit-content;
+        }
+
+        .order-items {
+            margin: 20px 0;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .summary-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+        }
+
+        .summary-line.total {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-top: 10px;
+            padding-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .payment-content {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</body>
+</html>

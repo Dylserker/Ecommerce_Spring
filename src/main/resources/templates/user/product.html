@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produit</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/user/product.css}">
+</head>
+<body class="dashboard-page">
+    <nav class="navbar">
+        <div class="navbar-top">
+            <div class="navbar-logo">Logo</div>
+            <div class="navbar-search">
+                <input type="text" id="searchInput" placeholder="Barre de recherche" class="search-bar">
+            </div>
+            <div class="navbar-actions">
+                <a th:href="@{/user/profile}" class="navbar-link">Profil</a>
+                <a href="#" class="navbar-link">Panier</a>
+            </div>
+        </div>
+        <div class="navbar-categories">
+            <a href="#" class="category-link">Ordinateur</a>
+            <a href="#" class="category-link">smartphone</a>
+            <a href="#" class="category-link">Accessoires</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <a href="#" class="btn-secondary">retour</a>
+
+        <div class="product-detail">
+            <div class="product-image-section">
+                <div class="product-photo">photo</div>
+            </div>
+
+            <div class="product-info-section">
+                <div class="product-prix">Prix</div>
+                <button class="btn-primary">Ajouter au panier</button>
+                <div class="product-stock">stock</div>
+                <div class="product-descriptif">Descriptif</div>
+            </div>
+        </div>
+    </div>
+            <div class="product-image-section">
+                <img th:src="${product.imageUrl}" alt="Produit" class="product-main-image">
+                <div class="product-thumbnails">
+                    <img th:src="${product.imageUrl}" alt="Miniature 1" class="thumbnail">
+                    <img th:src="${product.imageUrl}" alt="Miniature 2" class="thumbnail">
+                    <img th:src="${product.imageUrl}" alt="Miniature 3" class="thumbnail">
+                </div>
+            </div>
+
+            <div class="product-info-section">
+                <div class="breadcrumb">
+                    <a th:href="@{/user/products}">Accueil</a> / <span th:text="${product.category}">Catégorie</span> / <span th:text="${product.name}">Produit</span>
+                </div>
+
+                <h1 th:text="${product.name}">Nom du Produit</h1>
+                
+                <div class="rating-section">
+                    <span class="stars" th:text="'★★★★★ ' + ${product.rating}"></span>
+                    <span class="review-count" th:text="'(' + ${product.reviews} + ' avis)'"></span>
+                    <a href="#reviews" class="see-reviews">Voir les avis</a>
+                </div>
+
+                <div class="price-section">
+                    <div class="price-display">
+                        <span class="current-price" th:text="'€ ' + ${product.price}">Prix</span>
+                        <span class="original-price" th:if="${product.discount > 0}" th:text="'€ ' + ${product.originalPrice}"></span>
+                        <span class="discount-badge" th:if="${product.discount > 0}" th:text="'Économisez ' + ${product.discount} + '%'"></span>
+                    </div>
+                    <div class="stock-status" th:classappend="${product.stock > 0 ? 'in-stock' : 'out-of-stock'}">
+                        <span th:if="${product.stock > 0}">
+                            <strong>✓ En stock</strong> - <span th:text="${product.stock} + ' articles disponibles'"></span>
+                        </span>
+                        <span th:if="${product.stock == 0}">
+                            <strong>✗ Rupture de stock</strong>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="purchase-section">
+                    <div class="quantity-selector">
+                        <label for="qty">Quantité:</label>
+                        <div class="qty-controls">
+                            <button id="decreaseQty" class="qty-btn">−</button>
+                            <input type="number" id="qty" name="quantity" value="1" min="1" th:max="${product.stock}" class="qty-input">
+                            <button id="increaseQty" class="qty-btn">+</button>
+                        </div>
+                    </div>
+                    <button class="btn-primary btn-lg" th:onclick="'addToCart(' + ${product.id} + ')'" th:disabled="${product.stock == 0}">
+                        <span th:text="${product.stock > 0 ? 'Ajouter au panier' : 'Indisponible'}"></span>
+                    </button>
+                    <button class="btn-secondary btn-lg" id="wishlistBtn">
+                        <span id="wishlistText">❤ Ajouter à ma liste</span>
+                    </button>
+                </div>
+
+                <div class="shipping-info">
+                    <div class="info-item">
+                        <span class="info-icon">🚚</span>
+                        <div>
+                            <strong>Livraison gratuite</strong>
+                            <p>Pour toute commande supérieure à 50€</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-icon">🔄</span>
+                        <div>
+                            <strong>Retours gratuits</strong>
+                            <p>30 jours pour changer d'avis</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-icon">🛡</span>
+                        <div>
+                            <strong>Garantie</strong>
+                            <p>Garantie 2 ans sur tous les produits</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="product-tabs">
+            <div class="tabs-nav">
+                <button class="tab-btn active" data-tab="description">Description</button>
+                <button class="tab-btn" data-tab="specs">Caractéristiques</button>
+                <button class="tab-btn" data-tab="reviews">Avis</button>
+            </div>
+
+            <div class="tabs-content">
+                <div id="description" class="tab-content active">
+                    <h3>Description du produit</h3>
+                    <p th:text="${product.description}">
+                        Ceci est une description détaillée du produit. Elle contient toutes les informations importantes sur les caractéristiques, 
+                        la qualité et les avantages du produit.
+                    </p>
+                </div>
+
+                <div id="specs" class="tab-content">
+                    <h3>Caractéristiques techniques</h3>
+                    <table class="specs-table">
+                        <tr>
+                            <td><strong>Marque</strong></td>
+                            <td th:text="${product.brand}">XYZ</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Couleur</strong></td>
+                            <td th:text="${product.color}">Noir</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Taille</strong></td>
+                            <td th:text="${product.size}">M</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Matière</strong></td>
+                            <td th:text="${product.material}">Coton 100%</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Poids</strong></td>
+                            <td th:text="${product.weight} + ' kg'">1 kg</td>
+                        </tr>
+                        <tr>
+                            <td><strong>SKU</strong></td>
+                            <td th:text="${product.sku}">SKU-001</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div id="reviews" class="tab-content">
+                    <h3>Avis clients</h3>
+                    <div class="reviews-list">
+                        <div class="review-item">
+                            <div class="review-header">
+                                <strong>Jean Dupont</strong>
+                                <span class="review-rating">★★★★★</span>
+                            </div>
+                            <p class="review-date">Acheté le 15 janvier 2025</p>
+                            <p class="review-text">Excellent produit ! Qualité supérieure et livraison rapide. Je recommande vivement!</p>
+                        </div>
+                        <div class="review-item">
+                            <div class="review-header">
+                                <strong>Marie Martin</strong>
+                                <span class="review-rating">★★★★</span>
+                            </div>
+                            <p class="review-date">Acheté le 12 janvier 2025</p>
+                            <p class="review-text">Très bon produit, conforme à la description. Légèrement plus petit que prévu.</p>
+                        </div>
+                    </div>
+                    <button class="btn-secondary" id="addReviewBtn">Donner un avis</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="related-products">
+            <h2>Produits similaires</h2>
+            <div class="products-grid" style="grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));">
+                <div class="product-card" th:each="related : ${relatedProducts}">
+                    <img th:src="${related.imageUrl}" alt="Produit" class="product-img">
+                    <h3 th:text="${related.name}">Produit</h3>
+                    <p class="price" th:text="'€ ' + ${related.price}">Prix</p>
+                    <a th:href="@{/user/product/{id}(id=${related.id})}" class="btn-secondary">Voir détails</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const qtyInput = document.getElementById('qty');
+        const maxQty = parseInt(qtyInput.max) || 999;
+
+        document.getElementById('decreaseQty').addEventListener('click', function() {
+            if (qtyInput.value > 1) qtyInput.value--;
+        });
+
+        document.getElementById('increaseQty').addEventListener('click', function() {
+            if (qtyInput.value < maxQty) qtyInput.value++;
+        });
+
+        function addToCart(productId) {
+            const quantity = document.getElementById('qty').value;
+            fetch('/user/cart/add/' + productId, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({quantity: quantity})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Produit ajouté au panier avec succès!');
+                } else {
+                    alert('Erreur lors de l\'ajout au panier');
+                }
+            });
+        }
+
+        document.getElementById('wishlistBtn').addEventListener('click', function() {
+            this.classList.toggle('active');
+            const text = document.getElementById('wishlistText');
+            text.textContent = this.classList.contains('active') ? '❤ Dans ma liste' : '❤ Ajouter à ma liste';
+        });
+
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const tabName = this.dataset.tab;
+                document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.getElementById(tabName).classList.add('active');
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
+                    <button class="btn-primary" style="padding: 15px 40px; font-size: 1.1em;">Ajouter au panier</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+</html>

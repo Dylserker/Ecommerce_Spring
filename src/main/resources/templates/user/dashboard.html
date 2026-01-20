@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard user</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/user/dashboard.css}">
+</head>
+<body class="dashboard-page">
+    <nav class="navbar">
+        <div class="navbar-top">
+            <div class="navbar-logo">Logo</div>
+            <div class="navbar-search">
+                <input type="text" id="searchInput" placeholder="Barre de recherche" class="search-bar">
+            </div>
+            <div class="navbar-actions">
+                <a th:href="@{/user/profile}" class="navbar-link">Profil</a>
+                <a href="#" class="navbar-link">Panier</a>
+            </div>
+        </div>
+        <div class="navbar-categories">
+            <a href="#" class="category-link">Ordinateur</a>
+            <a href="#" class="category-link">smartphone</a>
+            <a href="#" class="category-link">Accessoires</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Sections principales -->
+        <div class="dashboard-grid">
+            <!-- Produit phare -->
+            <div class="dashboard-section full-width">
+                <h2>Produit phare</h2>
+                <div class="featured-product">
+                    <div class="featured-product-img"></div>
+                    <div class="featured-product-info">
+                        <p>Produit en vedette</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Produit commandé fréquemment -->
+            <div class="dashboard-section">
+                <h2>Produit commandé fréquemment</h2>
+                <div class="frequent-product"></div>
+            </div>
+
+            <!-- Produit en promo -->
+            <div class="dashboard-section">
+                <h2>Produit en promo</h2>
+                <div class="promo-product"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+    <div class="container">
+        <!-- Sections principales -->
+        <div class="dashboard-grid">
+            <!-- Produit phare -->
+            <div class="dashboard-section full-width">
+                <h2>Produit phare</h2>
+                <div class="featured-product">
+                    <div class="featured-product-img"></div>
+                    <div class="featured-product-info">
+                        <p>Produit en vedette</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Produit commandé fréquemment -->
+            <div class="dashboard-section">
+                <h2>Produit commandé fréquemment</h2>
+                <div class="frequent-product"></div>
+            </div>
+
+            <!-- Produit en promo -->
+            <div class="dashboard-section">
+                <h2>Produit en promo</h2>
+                <div class="promo-product"></div>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+</html>

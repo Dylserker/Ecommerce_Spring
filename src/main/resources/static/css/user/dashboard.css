@@ -1,0 +1,74 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body { background: #F0F3F5; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #2C3E50; }
+
+.navbar { background: linear-gradient(135deg, #708090 0%, #778899 100%); box-shadow: 0 4px 12px rgba(0,0,0,0.15); position: sticky; top: 0; z-index: 100; }
+.navbar-top { display: flex; align-items: center; justify-content: space-between; padding: 15px 30px; gap: 20px; }
+.navbar-logo { color: #E8E8E8; font-size: 20px; font-weight: 700; letter-spacing: 2px; }
+.navbar-search { flex: 1; max-width: 300px; }
+.search-bar { width: 100%; padding: 10px 15px; border: 2px solid #D3D3D3; border-radius: 6px; background: white; color: #2C3E50; }
+.navbar-actions { display: flex; gap: 20px; }
+.navbar-link { color: #E8E8E8; text-decoration: none; font-weight: 600; transition: color 0.3s; font-size: 14px; }
+.navbar-link:hover { color: #B0C4DE; }
+.navbar-categories { display: flex; gap: 20px; padding: 0 30px 15px 30px; border-top: 1px solid rgba(255,255,255,0.1); }
+.category-link { color: #D3D3D3; text-decoration: none; font-size: 13px; font-weight: 600; transition: all 0.3s; }
+.category-link:hover { color: #B0C4DE; }
+.container { max-width: 1200px; margin: 0 auto; padding: 30px 20px; }
+.dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+.dashboard-section { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 15px rgba(112,128,144,0.1); border-top: 4px solid #B0C4DE; }
+.dashboard-section h2 { color: #708090; margin-bottom: 20px; font-size: 18px; font-weight: 700; }
+.featured-product { background: linear-gradient(135deg, #D3D3D3 0%, #C0C0C0 100%); padding: 40px; border-radius: 8px; text-align: center; color: #708090; font-weight: 600; min-height: 150px; display: flex; align-items: center; justify-content: center; }
+.featured-product-img { width: 100%; height: 200px; background: linear-gradient(135deg, #D3D3D3 0%, #C0C0C0 100%); border-radius: 8px; margin-bottom: 15px; }
+.full-width { grid-column: 1 / -1; }
+
+/* Ajouts pour les blocs fréquents/promo (remplacement inline) */
+.frequent-product,
+.promo-product { background: linear-gradient(135deg, #D3D3D3 0%, #C0C0C0 100%); padding: 30px; border-radius: 8px; min-height: 120px; display: flex; align-items: center; justify-content: center; color: #708090; font-weight: 600; }
+
+/* Deuxième bloc (sections complémentaires) */
+.welcome-section { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px; border-radius: 8px; margin-bottom: 30px; text-align: center; }
+.welcome-section h1 { font-size: 2.5em; margin-bottom: 10px; }
+.welcome-subtitle { font-size: 1.1em; opacity: 0.9; }
+.stats-section { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 40px; }
+.stat-card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); display: flex; gap: 15px; align-items: flex-start; }
+.stat-icon { font-size: 2.5em; min-width: 50px; }
+.stat-content h3 { color: #2c3e50; font-size: 0.95em; margin-bottom: 10px; }
+.stat-number { font-size: 1.8em; font-weight: bold; color: #667eea; margin: 0; }
+.dashboard-grid { display: grid; gap: 30px; }
+.dashboard-section { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+.dashboard-section h2 { color: #2c3e50; margin: 0 0 20px 0; font-size: 1.3em; }
+.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.link-more { color: #667eea; text-decoration: none; font-weight: 600; transition: color 0.3s; }
+.link-more:hover { color: #5568d3; }
+.orders-list { display: flex; flex-direction: column; gap: 12px; }
+.order-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #f9f9f9; border-radius: 4px; gap: 15px; flex-wrap: wrap; }
+.order-info h4 { margin: 0; color: #2c3e50; }
+.order-date { font-size: 0.9em; color: #999; margin: 5px 0 0 0; }
+.order-details { display: flex; gap: 10px; align-items: center; }
+.order-total { font-weight: bold; color: #667eea; font-size: 1.1em; }
+.btn-view { padding: 8px 15px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; font-size: 0.9em; }
+.btn-view:hover { background: #5568d3; }
+.empty-state { text-align: center; padding: 40px 20px; color: #999; }
+.quick-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+.quick-link-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 8px; text-decoration: none; transition: transform 0.3s, box-shadow 0.3s; text-align: center; }
+.quick-link-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3); }
+.quick-link-icon { font-size: 2.5em; margin-bottom: 10px; }
+.quick-link-card h3 { margin: 10px 0 5px 0; }
+.quick-link-card p { margin: 0; font-size: 0.9em; opacity: 0.9; }
+.full-width { grid-column: 1 / -1; }
+.products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+.product-card { background: white; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; transition: all 0.3s; }
+.product-card:hover { box-shadow: 0 5px 15px rgba(0,0,0,0.1); transform: translateY(-5px); }
+.product-image { width: 100%; height: 200px; object-fit: cover; }
+.product-card h3 { padding: 15px 15px 10px 15px; color: #2c3e50; margin: 0; font-size: 1em; }
+.product-price { padding: 0 15px; color: #667eea; font-weight: bold; font-size: 1.2em; }
+.product-rating { padding: 0 15px 15px 15px; color: #999; font-size: 0.9em; }
+
+@media (max-width: 768px) {
+  .navbar-top { flex-wrap: wrap; }
+  .navbar-categories { flex-wrap: wrap; }
+  .welcome-section h1 { font-size: 1.8em; }
+  .stats-section { grid-template-columns: repeat(2, 1fr); }
+  .order-item { flex-direction: column; align-items: flex-start; }
+  .products-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+}
