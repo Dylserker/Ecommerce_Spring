@@ -8,7 +8,6 @@
     <link rel="stylesheet" th:href="@{/css/user/profile.css}">
 </head>
 <body class="dashboard-page">
-    <!-- Inclusion du fragment navbar -->
     <div th:replace="~{fragments/navbar :: user-navbar}"></div>
 
             <div class="container">
@@ -28,25 +27,24 @@
 
                     <div class="profile-content">
                         <div class="v-tabs-panel">
-                                <!-- Section Informations -->
                                 <div id="information" class="profile-section tab-content active">
                                     <h2 class="section-title">Informations</h2>
                                     <div class="profile-info">
                                         <div class="info-group">
                                             <div class="info-label">Prénom</div>
-                                            <div class="info-value">Prénom</div>
+                                            <input class="info-value" value="Prénom">
                                         </div>
                                         <div class="info-group">
                                             <div class="info-label">Nom</div>
-                                            <div class="info-value">Nom</div>
+                                            <input class="info-value" value="Nom">
                                         </div>
                                         <div class="info-group">
                                             <div class="info-label">Email</div>
-                                            <div class="info-value">Email</div>
+                                            <input class="info-value" value="Email">
                                         </div>
                                         <div class="info-group">
                                             <div class="info-label">Date de naissance</div>
-                                            <div class="info-value">Date de naissance</div>
+                                            <input class="info-value" value="Date de naissance">
                                         </div>
                                     </div>
                                     <div class="profile-actions" style="margin-top: 10px;">
@@ -55,7 +53,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Section Adresses -->
                                 <div id="addresses" class="profile-section tab-content">
                                     <h2 class="section-title">Adresses</h2>
                                     <div class="addresses-section">
@@ -71,6 +68,9 @@
                                                 <button class="btn-danger">Supprimer</button>
                                             </div>
                                         </div>
+                                        <div class="address-actions" style="margin-top: 10px;">
+                                            <button class="btn-secondary">+ Ajouter une adresse de facturation</button>
+                                        </div>
 
                                         <div class="address-card">
                                             <h3>Adresse de livraison</h3>
@@ -84,10 +84,12 @@
                                                 <button class="btn-danger">Supprimer</button>
                                             </div>
                                         </div>
+                                        <div class="address-actions" style="margin-top: 10px;">
+                                            <button class="btn-secondary">+ Ajouter une adresse de livraison</button>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <!-- Section Commandes -->
                                 <div id="orders" class="profile-section tab-content">
                                     <h2 class="section-title">Commandes</h2>
                                     <div class="orders-section">
@@ -119,18 +121,7 @@
                     </div>
                 </div>
 
-                <script>
-                function switchVTab(tabId, ev) {
-                    // Toggle active class on buttons
-                    document.querySelectorAll('.v-tab-btn').forEach(btn => btn.classList.remove('active'));
-                    if (ev && ev.currentTarget) ev.currentTarget.classList.add('active');
-
-                    // Show the selected tab content
-                    document.querySelectorAll('.tab-content').forEach(p => p.classList.remove('active'));
-                    const target = document.getElementById(tabId);
-                    if (target) target.classList.add('active');
-                }
-                </script>
+                <script th:src="@{/js/user/profile.js}"></script>
 
             </body>
             </html>

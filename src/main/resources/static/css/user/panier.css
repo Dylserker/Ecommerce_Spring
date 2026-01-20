@@ -34,8 +34,8 @@ body { background: #F0F3F5; font-family: -apple-system, BlinkMacSystemFont, 'Seg
 .btn-delete { padding: 8px 12px; background: #FFE8E8; color: #C1440E; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 12px; transition: all 0.3s; }
 .btn-delete:hover { background: #C1440E; color: white; }
 
-.cart-summary-section { display: flex; justify-content: flex-end; }
-.summary-card { background: linear-gradient(135deg, #F0F3F5 0%, #E8EDF2 100%); padding: 25px; border-radius: 10px; border-left: 4px solid #B0C4DE; min-width: 300px; }
+.cart-summary-section { display: flex; justify-content: flex-end; flex: 0 0 350px; height: fit-content; position: sticky; top: 20px; }
+.summary-card { background: white; padding: 25px; border-radius: 10px; border-left: 4px solid #B0C4DE; min-width: 300px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
 .summary-card h3 { color: #708090; margin-bottom: 20px; font-size: 16px; }
 .summary-line { display: flex; justify-content: space-between; margin-bottom: 15px; color: #2C3E50; font-size: 14px; }
 .summary-line.total { border-top: 2px solid #B0C4DE; padding-top: 15px; font-size: 16px; font-weight: 700; color: #708090; }
@@ -55,7 +55,7 @@ body { background: #F0F3F5; font-family: -apple-system, BlinkMacSystemFont, 'Seg
 .summary-details { margin-bottom: 20px; }
 .summary-line.pad { padding: 10px 0; color: #666; }
 
-.empty-cart { text-align: center; padding: 60px 20px; background: white; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+.empty-cart { text-align: center; padding: 60px 20px; background: white; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); margin-top: 30px; }
 .empty-message h2 { color: #2c3e50; margin-bottom: 15px; }
 .empty-message p { color: #666; margin-bottom: 20px; }
 

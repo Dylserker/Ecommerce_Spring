@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
 </head>
 <body>
-    <!-- Fragment pour afficher un produit en format liste -->
     <div th:fragment="product-row" class="product-row">
         <div class="product-item-img">
             <img th:src="${product.imageUrl}" alt="${product.name}" class="product-list-img">
@@ -25,7 +24,6 @@
         </div>
     </div>
 
-    <!-- Fragment pour afficher un produit en format carte/grille -->
     <div th:fragment="product-card" class="product-card">
         <div class="product-card-img">
             <img th:src="${product.imageUrl}" alt="${product.name}" class="product-grid-img">

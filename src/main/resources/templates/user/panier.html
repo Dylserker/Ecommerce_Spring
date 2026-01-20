@@ -8,50 +8,13 @@
     <link rel="stylesheet" th:href="@{/css/user/panier.css}">
 </head>
 <body class="dashboard-page">
-    <!-- Inclusion du fragment navbar -->
     <div th:replace="~{fragments/navbar :: user-navbar}"></div>
 
     <div class="container">
-        <div class="cart-container">
-            <h2>Votre panier</h2>
+        <div style="display: flex; gap: 20px;">
+            <div class="cart-container" style="flex: 1;">
+                <h2>Votre panier</h2>
             
-            <div class="cart-items-section">
-                <table class="cart-table">
-                    <thead>
-                        <tr>
-                            <th>Titre (En stock ou non)</th>
-                            <th>Photo</th>
-                            <th>prix</th>
-                            <th>qte</th>
-                            <th>sous total</th>
-                            <th>btn supp</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="item : ${cartItems}" class="cart-item">
-                            <td th:text="${item.product.name}">Titre</td>
-                            <td>Photo</td>
-                            <td class="price" th:text="'€ ' + ${item.product.price}">prix</td>
-                            <td class="quantity" th:text="${item.quantity}">qte</td>
-                            <td class="subtotal" th:text="'€ ' + ${item.quantity * item.product.price}">sous total</td>
-                            <td>
-                                <button class="btn-delete" th:onclick="'removeFromCart(' + ${item.product.id} + ')'" title="Supprimer du panier">Supprimer</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="cart-summary-section">
-                <div class="summary-card">
-                    <h3>Total commande</h3>
-                    <div class="summary-line total">
-                        <span class="total-amount" th:text="'€ ' + ${total}">Total</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
             <div class="cart-items-section">
                 <table class="cart-table">
                     <thead>
@@ -87,6 +50,7 @@
                         </tr>
                     </tbody>
                 </table>
+            </div>
             </div>
 
             <div class="cart-summary-section">
@@ -143,72 +107,6 @@
         </div>
     </div>
 
-    <script>
-        function updateQuantity(productId, change) {
-            const input = document.querySelector(`input[data-product-id="${productId}"]`);
-            let newValue = parseInt(input.value) + change;
-            if (newValue > 0) {
-                input.value = newValue;
-                updateCart();
-            }
-        }
-
-        function removeFromCart(productId) {
-            if (confirm('Êtes-vous sûr de vouloir supprimer cet article?')) {
-                fetch('/user/cart/remove/' + productId, {
-                    method: 'POST'
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        location.reload();
-                    }
-                });
-            }
-        }
-
-        function updateCart() {
-            const items = [];
-            document.querySelectorAll('.cart-item').forEach(row => {
-                const productId = row.querySelector('input[data-product-id]').dataset.productId;
-                const quantity = parseInt(row.querySelector('input[data-product-id]').value);
-                items.push({productId, quantity});
-            });
-
-            fetch('/user/cart/update', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({items})
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    location.reload();
-                }
-            });
-        }
-
-        function applyPromo() {
-            const code = document.getElementById('promoCode').value;
-            fetch('/user/cart/apply-promo', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({code})
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Code promotionnel appliqué avec succès!');
-                    location.reload();
-                } else {
-                    alert('Code promotionnel invalide');
-                }
-            });
-        }
-
-        function checkout() {
-            window.location.href = '/user/payment';
-        }
-    </script>
+    <script th:src="@{/js/user/cart.js}"></script>
 </body>
 </html>

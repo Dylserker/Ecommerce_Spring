@@ -5,18 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Paiement - E-commerce</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/user/dashboard.css}">
     <link rel="stylesheet" th:href="@{/css/user/payment.css}">
 </head>
 <body class="dashboard-page">
-    <!-- Inclusion du fragment navbar -->
     <div th:replace="~{fragments/navbar :: user-navbar}"></div>
 
     <div class="container">
-        <h1>Finaliser votre achat</h1>
-
-        <div class="payment-content">
-            <div class="payment-form-section">
-                <form th:action="@{/user/payment}" method="post" class="payment-form">
+        <div class="dashboard-grid">
+            <div class="dashboard-section full-width">
+                <h2>Finaliser votre achat</h2>
+                <div class="payment-content">
+                    <form th:action="@{/user/payment}" method="post" class="payment-form">
                     <div class="form-section">
                         <h2>Adresse de livraison</h2>
                         <div class="form-group">
@@ -142,9 +142,7 @@
 
                     <button type="submit" class="btn-primary btn-lg" style="width: 100%; padding: 15px; font-size: 1.1em;">Payer maintenant</button>
                 </form>
-            </div>
 
-            <div class="order-summary-section">
                 <div class="summary-card">
                     <h2>Résumé de commande</h2>
                     
@@ -197,7 +195,6 @@
     </div>
 
     <script>
-        // Mise à jour du coût de livraison selon la sélection
         document.querySelectorAll('input[name="shipping"]').forEach(input => {
             input.addEventListener('change', function() {
                 let cost = 'Gratuit';
@@ -207,7 +204,6 @@
             });
         });
 
-        // Affichage/masquage des détails de paiement selon la méthode
         document.querySelectorAll('input[name="paymentMethod"]').forEach(input => {
             input.addEventListener('change', function() {
                 const cardPayment = document.getElementById('cardPayment');
@@ -215,15 +211,17 @@
             });
         });
 
-        // Formatage du numéro de carte
         document.getElementById('card-number').addEventListener('input', function() {
             this.value = this.value.replace(/\s/g, '').replace(/(.{4})/g, '$1 ').trim();
         });
 
-        // Formatage du CVV
         document.getElementById('cvv').addEventListener('input', function() {
             this.value = this.value.replace(/\D/g, '').substring(0, 4);
         });
     </script>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

@@ -8,13 +8,10 @@
     <link rel="stylesheet" th:href="@{/css/user/dashboard.css}">
 </head>
 <body class="dashboard-page">
-    <!-- Inclusion du fragment navbar -->
     <div th:replace="~{fragments/navbar :: user-navbar}"></div>
 
     <div class="container">
-        <!-- Sections principales -->
         <div class="dashboard-grid">
-            <!-- Produit phare -->
             <div class="dashboard-section full-width">
                 <h2>Produit phare</h2>
                 <div class="featured-product">
@@ -25,13 +22,11 @@
                 </div>
             </div>
 
-            <!-- Produit commandé fréquemment -->
             <div class="dashboard-section">
                 <h2>Produit commandé fréquemment</h2>
                 <div class="frequent-product"></div>
             </div>
 
-            <!-- Produit en promo -->
             <div class="dashboard-section">
                 <h2>Produit en promo</h2>
                 <div class="promo-product"></div>
