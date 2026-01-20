@@ -8,18 +8,7 @@
     <link rel="stylesheet" th:href="@{/css/admin/dashboard.css}">
 </head>
 <body class="dashboard-page">
-    <nav class="navbar">
-        <h2>⚙️ Tableau de bord Administration</h2>
-        <div class="nav-links">
-            <a th:href="@{/admin/dashboard}" class="active">Dashboard</a>
-            <a th:href="@{/admin/users}">Utilisateurs</a>
-            <a th:href="@{/admin/products}">Produits</a>
-            <a th:href="@{/admin/orders}">Commandes</a>
-            <a th:href="@{/admin/reports}">Rapports</a>
-            <a th:href="@{/admin/settings}">Paramètres</a>
-            <a th:href="@{/admin/logout}">Déconnexion</a>
-        </div>
-    </nav>
+        <div th:replace="fragments/navbar :: admin-navbar('dashboard')"></div>
 
     <div class="container">
         <div class="dashboard-header">

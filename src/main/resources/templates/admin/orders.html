@@ -8,23 +8,7 @@
     <link rel="stylesheet" th:href="@{/css/admin/orders.css}">
 </head>
 <body class="dashboard-page">
-    <nav class="navbar">
-        <div class="navbar-top">
-            <div class="navbar-logo">Logo</div>
-            <div class="navbar-search">
-                <input type="text" id="searchInput" placeholder="Barre de recherche" class="search-bar">
-            </div>
-            <div class="navbar-actions">
-                <a href="#" class="navbar-link">Profil</a>
-                <a href="#" class="navbar-link">Panier</a>
-            </div>
-        </div>
-        <div class="navbar-categories">
-            <a href="#" class="category-link">Ordinateur</a>
-            <a href="#" class="category-link">smartphone</a>
-            <a href="#" class="category-link">Accessoires</a>
-        </div>
-    </nav>
+        <div th:replace="fragments/navbar :: admin-navbar('orders')"></div>
 
     <div class="container">
         <div class="admin-table-container">
