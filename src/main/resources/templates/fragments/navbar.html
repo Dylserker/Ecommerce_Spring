@@ -21,5 +21,28 @@
             <a th:href="@{/user/products(category='accessoires')}" class="category-link">Accessoires</a>
         </div>
     </nav>
+
+    <nav th:fragment="admin-navbar(activePage)" class="navbar admin-nav">
+        <div class="navbar-top">
+            <a th:href="@{/admin/dashboard}" class="navbar-logo">Logo</a>
+            <div class="navbar-search">
+                <input type="text" id="searchInput" placeholder="Barre de recherche" class="search-bar">
+            </div>
+            <div class="navbar-actions">
+                <a th:href="@{/admin/profile}" class="navbar-link" th:classappend="${activePage} == 'profile' ? ' active' : ''">Profil</a>
+                <a th:href="@{/admin/logout}" class="navbar-link">Déconnexion</a>
+            </div>
+        </div>
+        <div class="navbar-categories">
+            <a th:href="@{/admin/products(category='ordinateur')}" class="category-link">Ordinateur</a>
+            <a th:href="@{/admin/products(category='smartphone')}" class="category-link">smartphone</a>
+            <a th:href="@{/admin/products(category='accessoires')}" class="category-link">Accessoires</a>
+        </div>
+        <div class="navbar-categories">
+            <a th:href="@{/admin/users}" class="category-link" th:classappend="${activePage} == 'users' ? ' active' : ''">Utilisateurs</a>
+            <a th:href="@{/admin/products}" class="category-link" th:classappend="${activePage} == 'products' ? ' active' : ''">Produits</a>
+            <a th:href="@{/admin/orders}" class="category-link" th:classappend="${activePage} == 'orders' ? ' active' : ''">Commandes</a>
+        </div>
+    </nav>
 </body>
 </html>

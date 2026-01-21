@@ -8,17 +8,7 @@
     <link rel="stylesheet" th:href="@{/css/admin/product.css}">
 </head>
 <body class="dashboard-page">
-    <nav class="navbar">
-        <h2>📦 Gestion des produits</h2>
-        <div class="nav-links">
-            <a th:href="@{/admin/dashboard}">Dashboard</a>
-            <a th:href="@{/admin/users}">Utilisateurs</a>
-            <a th:href="@{/admin/products}" class="active">Produits</a>
-            <a th:href="@{/admin/orders}">Commandes</a>
-            <a th:href="@{/admin/profile}">Profil</a>
-            <a th:href="@{/admin/logout}">Déconnexion</a>
-        </div>
-    </nav>
+        <div th:replace="fragments/navbar :: admin-navbar('products')"></div>
 
     <div class="container">
         <a th:href="@{/admin/products}" class="btn-secondary" style="margin-bottom: 20px;">← Retour à la liste</a>

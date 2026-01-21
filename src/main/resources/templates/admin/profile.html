@@ -8,17 +8,7 @@
     <link rel="stylesheet" th:href="@{/css/admin/profile.css}">
 </head>
 <body class="dashboard-page">
-    <nav class="navbar">
-        <h2>⚙️ Paramètres Administrateur</h2>
-        <div class="nav-links">
-            <a th:href="@{/admin/dashboard}">Dashboard</a>
-            <a th:href="@{/admin/users}">Utilisateurs</a>
-            <a th:href="@{/admin/products}">Produits</a>
-            <a th:href="@{/admin/orders}">Commandes</a>
-            <a th:href="@{/admin/profile}" class="active">Profil</a>
-            <a th:href="@{/admin/logout}">Déconnexion</a>
-        </div>
-    </nav>
+        <div th:replace="fragments/navbar :: admin-navbar('profile')"></div>
 
     <div class="container">
         <div class="admin-profile-container">
