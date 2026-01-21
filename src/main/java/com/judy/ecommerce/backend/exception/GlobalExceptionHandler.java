@@ -85,8 +85,8 @@ public class GlobalExceptionHandler {
 
 
     // Default, exception message is for DEBUG only!
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleException(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected server error.");
-    }
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<String> handleException(Exception ex) {
+//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected server error.");
+//    }
 }

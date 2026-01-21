@@ -42,14 +42,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         final String token = authHeader.substring(7);
-        final int id = Integer.parseInt(jwtService.extractId(token));
+        final long id = Long.parseLong(jwtService.extractId(token));
 
         if (SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userRepository.findByIdAndDisabledFalse(id)
                     .map(user -> new org.springframework.security.core.userdetails.User(
                             user.getEmail(),
                             user.getPassword(),
-                            List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole()))
+                            List.of(new SimpleGrantedAuthority(user.getRole().toString()))
                     ))
                     .orElseThrow(() -> new UsernameNotFoundException("User not found."));
             if (jwtService.isTokenValid(token)) {

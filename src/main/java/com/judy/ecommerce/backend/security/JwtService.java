@@ -1,8 +1,9 @@
 package com.judy.ecommerce.backend.security;
 
+import com.judy.ecommerce.backend.exception.UnauthorizedException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.jsonwebtoken.security.SignatureException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -28,12 +29,16 @@ public class JwtService {
     }
 
     public String extractId(String token) {
-        return Jwts.parser()
-                .verifyWith(getSigningKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .getSubject();
+        try {
+            return Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload()
+                    .getSubject();
+        } catch (SignatureException e) {
+            throw new UnauthorizedException("Invalid token.");
+        }
     }
     
     public boolean isTokenValid(String token) {
