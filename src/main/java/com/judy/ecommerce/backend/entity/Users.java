@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
@@ -17,7 +18,13 @@ import java.time.LocalDateTime;
 public class Users {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
+
+    @OneToMany(mappedBy = "user")
+    private List<Carts> carts;
+
+    @OneToMany(mappedBy = "user")
+    private List<Orders> orders;
 
     @Column(length = 64, nullable = false)
     private String lastname;
@@ -39,8 +46,10 @@ public class Users {
     private boolean disabled = false;
 
     @CreatedDate
+    @Column(nullable = false)
     private LocalDateTime createdAt;
 
     @LastModifiedDate
+    @Column(nullable = false)
     private LocalDateTime updatedAt;
 }
