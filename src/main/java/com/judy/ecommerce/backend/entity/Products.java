@@ -39,5 +39,5 @@ public class Products {
     private int quantity = 0;
 
     @Column(nullable = false)
-    private boolean disabled = false;
+    private boolean disabled;
 }

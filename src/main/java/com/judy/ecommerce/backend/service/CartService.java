@@ -1,6 +1,6 @@
 package com.judy.ecommerce.backend.service;
 
-import com.judy.ecommerce.backend.dto.product.ProductDto;
+import com.judy.ecommerce.backend.dto.product.ProductDTO;
 import com.judy.ecommerce.backend.entity.Carts;
 import com.judy.ecommerce.backend.entity.Products;
 import com.judy.ecommerce.backend.entity.Users;
@@ -9,7 +9,6 @@ import com.judy.ecommerce.backend.exception.UnauthorizedException;
 import com.judy.ecommerce.backend.repository.CartRepository;
 import com.judy.ecommerce.backend.repository.ProductRepository;
 import com.judy.ecommerce.backend.repository.UserRepository;
-import jakarta.validation.constraints.Min;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -31,18 +30,18 @@ public class CartService {
         this.productRepository = productRepository;
     }
 
-    public List<ProductDto> getCart(String username) {
+    public List<ProductDTO> getCart(String username) {
         Users user = userRepository.findByEmailIgnoreCaseAndDisabledFalse(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Unexpected error."));
 
         return getCartProducts(user);
     }
 
-    public List<ProductDto> addToCart(String username, int id, int quantity) {
+    public List<ProductDTO> addToCart(String username, int id, int quantity) {
         Users user = userRepository.findByEmailIgnoreCaseAndDisabledFalse(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Unexpected error."));
 
-        Products product = productRepository.findById(id)
+        Products product = productRepository.findByIdAndDisabledFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found."));
 
         // Check if the product isn't already in cart
@@ -79,7 +78,7 @@ public class CartService {
         return getCartProducts(user);
     }
 
-    public List<ProductDto> updateQuantityInCart(String username, int id, int quantity) {
+    public List<ProductDTO> updateQuantityInCart(String username, int id, int quantity) {
         // Redirect to the delete function if quantity = 0
         if (quantity == 0) {
             return removeFromCart(username, id);
@@ -88,7 +87,7 @@ public class CartService {
         Users user = userRepository.findByEmailIgnoreCaseAndDisabledFalse(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Unexpected error."));
 
-        Products product = productRepository.findById(id)
+        Products product = productRepository.findByIdAndDisabledFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found."));
 
         if (!cartRepository.existsByUserAndProduct(user, product)) {
@@ -109,11 +108,11 @@ public class CartService {
         return getCartProducts(user);
     }
 
-    public List<ProductDto> removeFromCart(String username, int id) {
+    public List<ProductDTO> removeFromCart(String username, int id) {
         Users user = userRepository.findByEmailIgnoreCaseAndDisabledFalse(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Unexpected error."));
 
-        Products product = productRepository.findById(id)
+        Products product = productRepository.findByIdAndDisabledFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found."));
 
         if (!cartRepository.existsByUserAndProduct(user, product)) {
@@ -133,26 +132,27 @@ public class CartService {
 
     // UTILS //
 
-    public List<ProductDto> getCartProducts(Users user) {
-        List<ProductDto> products = new ArrayList<>();
+    private List<ProductDTO> getCartProducts(Users user) {
+        List<ProductDTO> products = new ArrayList<>();
         List<Carts> cart = cartRepository.findAllByUser(user);
 
         for (Carts cartProduct : cart) {
             Products product = cartProduct.getProduct();
-            products.add(new ProductDto(
+            products.add(new ProductDTO(
                     product.getId(),
                     product.getName(),
                     product.getDescription(),
                     product.getCategory().getName(),
                     product.getPrice(),
-                    cartProduct.getQuantity()
+                    cartProduct.getQuantity(),
+                    product.isDisabled()
             ));
         }
 
         return products;
     }
 
-    public void checkQuantity(Products product, int quantityRequested) {
+    private void checkQuantity(Products product, int quantityRequested) {
         if (product.getQuantity() - quantityRequested < 0) {
             throw new UnauthorizedException("Requested product quantity is too high.");
         }
