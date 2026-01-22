@@ -3,34 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>List Product</title>
+    <title>Tous les produits</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" th:href="@{/css/user/product-list.css}">
 </head>
 <body class="dashboard-page">
-    <div th:replace="~{fragments/navbar :: user-navbar}"></div>
+    <div th:replace="~{fragments/public-navbar :: public-navbar}"></div>
 
     <div class="container">
         <div class="list-product-wrapper">
             <div class="filter-sidebar">
-                <h3>Filtre:</h3>
+                <h3>Filtres</h3>
                 <div class="filter-search">
-                    <label>Search bar</label>
+                    <label>Rechercher</label>
                     <input type="text" placeholder="Rechercher..." class="filter-input">
                 </div>
                 <div class="filter-price">
-                    <label>prix min / max</label>
+                    <label>Prix min / max</label>
                     <div class="price-inputs">
                         <input type="number" placeholder="Min" class="price-min">
                         <input type="number" placeholder="Max" class="price-max">
                     </div>
                 </div>
                 <div class="filter-system">
-                    <label>Système</label>
+                    <label>Catégorie</label>
                     <select class="filter-select">
-                        <option>Tous</option>
-                        <option>Système 1</option>
-                        <option>Système 2</option>
+                        <option>Toutes</option>
+                        <option>Ordinateurs</option>
+                        <option>Smartphones</option>
+                        <option>Accessoires</option>
                     </select>
                 </div>
             </div>
@@ -40,24 +41,22 @@
                     <div class="product-row" th:each="product : ${products}">
                         <div class="product-item-img">Photo</div>
                         <div class="product-item-info">
-                            <h4 th:text="${product.name}">Titre</h4>
-                            <p th:text="${product.description}">Description</p>
+                            <h4 th:text="${product.name}">Titre du produit</h4>
+                            <p th:text="${product.description}">Description du produit</p>
                         </div>
                         <div class="product-item-price" th:text="'€ ' + ${product.price}">Prix</div>
                         <div class="product-item-actions">
-                            <a th:href="@{/user/product/{id}(id=${product.id})}" class="btn-secondary" style="text-decoration: none;">Voir</a>
-                            <button class="btn-primary">Panier</button>
+                            <a th:href="@{/product/{id}(id=${product.id})}" class="btn-secondary">Voir détails</a>
                         </div>
                     </div>
                 </div>
 
                 <div class="pagination">
-                    <span>Pagination</span>
+                    <span>Page 1 sur 1</span>
                 </div>
             </div>
         </div>
     </div>
-
 
 </body>
 </html>

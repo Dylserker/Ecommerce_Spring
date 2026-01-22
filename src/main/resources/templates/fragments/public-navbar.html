@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <nav th:fragment="public-navbar" class="navbar">
+        <div class="navbar-top">
+            <a th:href="@{/}" class="navbar-logo" style="text-decoration: none; color: inherit;">LOGO</a>
+            <div class="navbar-search">
+                <input type="text" placeholder="Rechercher un produit..." class="search-bar">
+            </div>
+            <div class="navbar-actions">
+                <a th:href="@{/cart}" class="navbar-link">🛒 Panier</a>
+                <a th:href="@{/user/login}" class="navbar-link btn-login-nav">Se connecter</a>
+            </div>
+        </div>
+        <div class="navbar-categories">
+            <a th:href="@{/products}" class="category-link">Tous les produits</a>
+            <a href="#" class="category-link">Ordinateurs</a>
+            <a href="#" class="category-link">Smartphones</a>
+            <a href="#" class="category-link">Accessoires</a>
+        </div>
+    </nav>
+</body>
+</html>

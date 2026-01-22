@@ -3,10 +3,13 @@ package com.judy.ecommerce.frontend.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/user")
@@ -52,7 +55,39 @@ public class UserController {
     }
 
     @GetMapping("/product/{id}")
-    public String showProductDetail() {
+    public String showProductDetail(@PathVariable Long id, Model model) {
+        // TODO: Charger le produit depuis la base de données en attendant la vrai DB
+        Map<String, Object> product = new HashMap<>();
+        product.put("id", id);
+        product.put("name", "Produit " + id);
+        product.put("category", "Catégorie");
+        product.put("price", 199.0);
+        product.put("originalPrice", 249.0);
+        product.put("discount", 20);
+        product.put("stock", 12);
+        product.put("rating", 4.5);
+        product.put("reviews", 128);
+        product.put("description", "Description du produit " + id);
+        product.put("brand", "Marque X");
+        product.put("color", "Noir");
+        product.put("size", "M");
+        product.put("material", "Composite");
+        product.put("weight", 1.2);
+        product.put("sku", "SKU-" + id);
+        product.put("imageUrl", "/img/sample-product.jpg");
+
+        List<Map<String, Object>> related = new ArrayList<>();
+        for (int i = 1; i <= 3; i++) {
+            Map<String, Object> rel = new HashMap<>();
+            rel.put("id", id + i);
+            rel.put("name", "Produit lié " + (id + i));
+            rel.put("price", 149.0 + i * 10);
+            rel.put("imageUrl", "/img/sample-product.jpg");
+            related.add(rel);
+        }
+
+        model.addAttribute("product", product);
+        model.addAttribute("relatedProducts", related);
         return "user/product";
     }
 

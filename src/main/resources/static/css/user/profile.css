@@ -40,9 +40,16 @@ body { background: #F0F3F5; font-family: -apple-system, BlinkMacSystemFont, 'Seg
 .info-group { padding: 15px; background: #F0F3F5; border-radius: 8px; border-left: 3px solid #B0C4DE; }
 .info-label { color: #708090; font-weight: 700; margin-bottom: 8px; font-size: 12px; }
 .info-value { color: #2C3E50; font-size: 14px; }
-.profile-actions { display: flex; gap: 15px; }
+.info-value[readonly] { background: #E8EDF1; border: 1px solid #D6DEE5; cursor: not-allowed; }
+.hidden { display: none !important; }
+.profile-actions { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
 .btn-danger { flex: 1; padding: 10px 15px; background: #FFE8E8; color: #C1440E; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
 .btn-danger:hover { background: #C1440E; color: white; }
+.account-actions { display: flex; gap: 10px; flex-wrap: nowrap; align-items: center; }
+.account-actions .btn-secondary,
+.account-actions .btn-danger { flex: 1 1 auto; min-width: 413px; }
+.btn-primary { padding: 10px 15px; background: linear-gradient(135deg, #708090 0%, #778899 100%); color: white; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
+.btn-primary:hover { opacity: 0.9; }
 
 .addresses-section { display: grid; gap: 15px; margin-bottom: 20px; }
 .address-card { padding: 15px; background: #F8F9FA; border-radius: 8px; border-left: 3px solid #B0C4DE; }
@@ -57,11 +64,28 @@ body { background: #F0F3F5; font-family: -apple-system, BlinkMacSystemFont, 'Seg
 .orders-table tbody tr:hover { background: #F8F9FA; }
 .orders-table td { padding: 15px; font-size: 13px; color: #2C3E50; }
 
+.modal { position: fixed; inset: 0; background: rgba(44,62,80,0.45); display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 200; }
+.modal.hidden { display: none; }
+.modal-content { background: white; border-radius: 12px; width: min(720px, 100%); box-shadow: 0 10px 30px rgba(0,0,0,0.15); border-top: 4px solid #B0C4DE; }
+.modal-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px; border-bottom: 1px solid #E8E8E8; }
+.modal-header h3 { margin: 0; color: #2C3E50; font-size: 18px; }
+.modal-close { background: transparent; border: none; font-size: 22px; cursor: pointer; color: #708090; padding: 6px; line-height: 1; }
+.modal-body { padding: 20px; display: flex; flex-direction: column; gap: 18px; }
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.form-field { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: #2C3E50; }
+.form-field span { font-weight: 700; color: #708090; }
+.form-field input { padding: 10px 12px; border: 1px solid #E0E6EA; border-radius: 6px; font-size: 14px; color: #2C3E50; background: #F7F9FB; }
+.form-field input:focus { outline: none; border-color: #B0C4DE; box-shadow: 0 0 0 2px rgba(176,196,222,0.35); }
+.modal-actions { display: flex; justify-content: flex-end; gap: 10px; padding: 0 20px 20px 20px; }
+
 @media (max-width: 768px) {
   .profile-container { grid-template-columns: 1fr; grid-template-areas: "sidebar" "tabs" "content"; }
   .v-tabs-nav { flex-direction: row; align-items: stretch; }
   .v-tab-btn { flex: 1; text-align: center; }
   .profile-info { grid-template-columns: 1fr; }
-  .profile-actions { flex-direction: column; }
+  .profile-actions { flex-direction: column; align-items: stretch; }
+  .account-actions { flex-direction: row; }
   .address-actions { flex-direction: column; }
+  .modal { align-items: flex-start; }
+  .modal-content { margin-top: 40px; }
 }

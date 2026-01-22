@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panier</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/user/panier.css}">
+</head>
+<body class="dashboard-page">
+    <div th:replace="~{fragments/public-navbar :: public-navbar}"></div>
+
+    <div class="container">
+        <div class="empty-cart" th:if="${cartEmpty}">
+            <div class="empty-message">
+                <h2>Votre panier est vide</h2>
+                <p>Commencez à ajouter des produits pour remplir votre panier.</p>
+                <div class="login-notice" style="background: #E3F2FD; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #2196F3; text-align: center;">
+                    <p style="margin-bottom: 15px; color: #1565C0; font-weight: 600;">💡 Connectez-vous pour sauvegarder votre panier et passer commande</p>
+                    <a th:href="@{/user/login}" class="btn-primary" style="text-decoration: none; margin-right: 10px;">Se connecter</a>
+                    <a th:href="@{/user/register}" class="btn-secondary" style="text-decoration: none;">Créer un compte</a>
+                </div>
+                <a th:href="@{/products}" class="btn-primary">Voir les produits</a>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 20px;" th:if="${!cartEmpty}">
+            <div class="cart-container" style="flex: 1;">
+                <h2>Votre panier</h2>
+            
+                <div class="cart-items-section">
+                    <table class="cart-table">
+                        <thead>
+                            <tr>
+                                <th>Produit</th>
+                                <th>Prix unitaire</th>
+                                <th>Quantité</th>
+                                <th>Sous-total</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="item : ${cartItems}" class="cart-item">
+                                <td class="product-info">
+                                    <div class="cart-item-img">Photo</div>
+                                    <div>
+                                        <strong th:text="${item.product.name}">Nom du produit</strong>
+                                        <p class="product-sku">SKU: XXX</p>
+                                    </div>
+                                </td>
+                                <td class="price" th:text="'€ ' + ${item.product.price}">Prix</td>
+                                <td class="quantity">
+                                    <div class="qty-controls">
+                                        <button class="qty-btn">−</button>
+                                        <input type="number" th:value="${item.quantity}" min="1" class="qty-input">
+                                        <button class="qty-btn">+</button>
+                                    </div>
+                                </td>
+                                <td class="subtotal" th:text="'€ ' + ${item.quantity * item.product.price}">Sous-total</td>
+                                <td class="action">
+                                    <button class="btn-delete" title="Supprimer du panier">🗑 Supprimer</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="cart-summary-section">
+                <div class="summary-card">
+                    <h2>Résumé</h2>
+                    
+                    <div class="summary-details">
+                        <div class="summary-line">
+                            <span>Sous-total:</span>
+                            <span class="subtotal-amount" th:text="'€ ' + ${subtotal}">0,00€</span>
+                        </div>
+                        <div class="summary-line">
+                            <span>Livraison:</span>
+                            <span class="shipping-amount">€9,99</span>
+                        </div>
+                        <div class="summary-line">
+                            <span>TVA (20%):</span>
+                            <span class="tax-amount" th:text="'€ ' + ${tax}">Calculée</span>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="summary-line total">
+                        <span>Total:</span>
+                        <span class="total-amount" th:text="'€ ' + ${total}">0,00€</span>
+                    </div>
+
+                    <div class="login-notice" style="background: #FFF3E0; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #FF9800; text-align: center;">
+                        <p style="margin-bottom: 10px; color: #E65100; font-weight: 600;">🔒 Connectez-vous pour finaliser votre achat</p>
+                        <a th:href="@{/user/login}" class="btn-primary" style="width: 100%; display: block; text-decoration: none; text-align: center;">Se connecter pour payer</a>
+                        <p style="margin: 10px 0 0 0; font-size: 13px; color: #666;">Pas encore de compte? <a th:href="@{/user/register}" style="color: #2196F3;">Inscrivez-vous</a></p>
+                    </div>
+
+                    <a th:href="@{/products}" class="btn-secondary" style="display: block; text-align: center; margin-top: 10px; text-decoration: none;">
+                        ← Continuer vos achats
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

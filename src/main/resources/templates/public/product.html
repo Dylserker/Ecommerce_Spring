@@ -8,10 +8,10 @@
     <link rel="stylesheet" th:href="@{/css/user/product.css}">
 </head>
 <body class="dashboard-page">
-    <div th:replace="~{fragments/navbar :: user-navbar}"></div>
+    <div th:replace="~{fragments/public-navbar :: public-navbar}"></div>
 
     <div class="container">
-        <a th:href="@{/user/products}" class="btn-secondary">← Retour</a>
+        <a th:href="@{/products}" class="btn-secondary">← Retour</a>
 
         <div class="product-detail">
             <div class="product-image-section">
@@ -25,19 +25,19 @@
 
             <div class="product-info-section">
                 <div class="breadcrumb">
-                    <a th:href="@{/user/products}">Accueil</a> / <span th:text="${product.category}">Catégorie</span> / <span th:text="${product.name}">Produit</span>
+                    <a th:href="@{/products}">Accueil</a> / <span th:text="${product.category}">Catégorie</span> / <span th:text="${product.name}">Produit</span>
                 </div>
 
-                <h1 th:text="${product.name}">Nom du Produit</h1>
+                <h1 th:text="${product.name}">Nom du produit</h1>
 
-                <div class="rating-section">
+                <div class="rating-section" th:if="${product != null}">
                     <span class="stars" th:text="'★★★★★ ' + ${product.rating}"></span>
                     <span class="review-count" th:text="'(' + ${product.reviews} + ' avis)'"></span>
                 </div>
 
                 <div class="price-section">
                     <div class="price-display">
-                        <span class="current-price" th:text="'€ ' + ${product.price}">Prix</span>
+                        <span class="current-price" th:text="'€ ' + ${product.price}">€ 0,00</span>
                         <span class="original-price" th:if="${product.discount > 0}" th:text="'€ ' + ${product.originalPrice}"></span>
                         <span class="discount-badge" th:if="${product.discount > 0}" th:text="'Économisez ' + ${product.discount} + '%'"></span>
                     </div>
@@ -51,31 +51,20 @@
                     </div>
                 </div>
 
-                <div class="purchase-section">
-                    <div class="quantity-selector">
-                        <label for="qty">Quantité:</label>
-                        <div class="qty-controls">
-                            <button id="decreaseQty" class="qty-btn">−</button>
-                            <input type="number" id="qty" name="quantity" value="1" min="1" th:max="${product.stock}" class="qty-input">
-                            <button id="increaseQty" class="qty-btn">+</button>
-                        </div>
-                    </div>
-                    <button class="btn-primary btn-lg" th:onclick="'addToCart(' + ${product.id} + ')'" th:disabled="${product.stock == 0}">
-                        <span th:text="${product.stock > 0 ? 'Ajouter au panier' : 'Indisponible'}"></span>
-                    </button>
-                    <button class="btn-secondary btn-lg" id="wishlistBtn">
-                        <span id="wishlistText">❤ Ajouter à ma liste</span>
-                    </button>
+                <div class="login-notice" style="background: #FFF3E0; padding: 15px; border-radius: 8px; margin: 10px 0 20px 0; border-left: 4px solid #FF9800;">
+                    <p style="margin: 0; color: #E65100; font-weight: 600;">⚠️ Connectez-vous pour ajouter au panier</p>
+                    <a th:href="@{/user/login}" class="btn-primary" style="display: inline-block; margin-top: 10px; text-decoration: none;">Se connecter</a>
+                    <span style="margin: 0 10px;">ou</span>
+                    <a th:href="@{/user/register}}" class="btn-secondary" style="display: inline-block; text-decoration: none;">Créer un compte</a>
                 </div>
 
                 <div class="product-descriptif">
                     <h3>Description</h3>
-                    <p th:text="${product.description}">Description détaillée du produit.</p>
+                    <p th:text="${product.description}">Description détaillée du produit. Toutes les informations importantes sur les caractéristiques et les avantages.</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <script th:src="@{/js/user/product.js}"></script>
 </body>
 </html>
