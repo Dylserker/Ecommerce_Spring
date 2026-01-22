@@ -20,16 +20,34 @@ public class CartAPIController {
         this.cartService = cartService;
     }
 
-    @PostMapping("/add/{id}")
-    public ResponseEntity<List<ProductDto>> addToCart(@AuthenticationPrincipal UserDetails userDetails,
-                                                      @PathVariable int id) {
+    @GetMapping()
+    public ResponseEntity<List<ProductDto>> getCart(@AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(cartService.getCart(userDetails.getUsername()));
+    }
+
+    @PostMapping("/{id}")
+    public ResponseEntity<List<ProductDto>> addOneToCart(@AuthenticationPrincipal UserDetails userDetails,
+                                                         @PathVariable int id) {
         return ResponseEntity.ok(cartService.addToCart(userDetails.getUsername(), id, 1));
     }
 
-    @PostMapping("/add/{id}/{quantity}")
-    public ResponseEntity<List<ProductDto>> addToCart(@AuthenticationPrincipal UserDetails userDetails,
-                                                      @PathVariable int id,
-                                                      @PathVariable @Min(1) int quantity) {
+    @PostMapping("/{id}/{quantity}")
+    public ResponseEntity<List<ProductDto>> addMultipleToCart(@AuthenticationPrincipal UserDetails userDetails,
+                                                              @PathVariable int id,
+                                                              @PathVariable @Min(1) int quantity) {
         return ResponseEntity.ok(cartService.addToCart(userDetails.getUsername(), id, quantity));
+    }
+
+    @PatchMapping("/{id}/{quantity}")
+    public ResponseEntity<List<ProductDto>> updateQuantityInCart(@AuthenticationPrincipal UserDetails userDetails,
+                                                                 @PathVariable int id,
+                                                                 @PathVariable @Min(0) int quantity) {
+        return ResponseEntity.ok(cartService.updateQuantityInCart(userDetails.getUsername(), id, quantity));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<List<ProductDto>> removeFromCart(@AuthenticationPrincipal UserDetails userDetails,
+                                                              @PathVariable int id) {
+        return ResponseEntity.ok(cartService.removeFromCart(userDetails.getUsername(), id));
     }
 }
