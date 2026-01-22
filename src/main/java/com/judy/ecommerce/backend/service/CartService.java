@@ -9,6 +9,7 @@ import com.judy.ecommerce.backend.exception.UnauthorizedException;
 import com.judy.ecommerce.backend.repository.CartRepository;
 import com.judy.ecommerce.backend.repository.ProductRepository;
 import com.judy.ecommerce.backend.repository.UserRepository;
+import jakarta.validation.constraints.Min;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +31,13 @@ public class CartService {
         this.productRepository = productRepository;
     }
 
+    public List<ProductDto> getCart(String username) {
+        Users user = userRepository.findByEmailIgnoreCaseAndDisabledFalse(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Unexpected error."));
+
+        return getCartProducts(user);
+    }
+
     public List<ProductDto> addToCart(String username, int id, int quantity) {
         Users user = userRepository.findByEmailIgnoreCaseAndDisabledFalse(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Unexpected error."));
@@ -48,9 +56,7 @@ public class CartService {
                     .orElseThrow();
 
             // Check if requested quantity + old quantity is ok
-            if (!checkQuantity(product, quantity + oldCartProduct.getQuantity())) {
-                throw new UnauthorizedException("Requested product quantity is too high.");
-            }
+            checkQuantity(product, quantity + oldCartProduct.getQuantity());
 
             // Increase quantity and save
             oldCartProduct.setQuantity(oldCartProduct.getQuantity() + quantity);
@@ -59,9 +65,7 @@ public class CartService {
             // If not in cart, create a new cart item
 
             // Check if requested quantity is ok
-            if (!checkQuantity(product, quantity)) {
-                throw new UnauthorizedException("Requested product quantity is too high.");
-            }
+            checkQuantity(product, quantity);
 
             // Create the cart item and save it
             Carts productToAdd = new Carts();
@@ -75,9 +79,59 @@ public class CartService {
         return getCartProducts(user);
     }
 
-    public boolean checkQuantity(Products product, int quantityRequested) {
-        return product.getQuantity() - quantityRequested >= 0;
+    public List<ProductDto> updateQuantityInCart(String username, int id, int quantity) {
+        // Redirect to the delete function if quantity = 0
+        if (quantity == 0) {
+            return removeFromCart(username, id);
+        }
+
+        Users user = userRepository.findByEmailIgnoreCaseAndDisabledFalse(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Unexpected error."));
+
+        Products product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found."));
+
+        if (!cartRepository.existsByUserAndProduct(user, product)) {
+            throw new ResourceNotFoundException("Product not in cart.");
+        }
+
+        // Check if requested quantity is ok
+        checkQuantity(product, quantity);
+
+        // Shouldn't fail
+        Carts oldProduct = cartRepository.findByUserAndProduct(user, product)
+                .orElseThrow();
+
+        oldProduct.setQuantity(quantity);
+        cartRepository.save(oldProduct);
+
+        // Return the full cart formatted properly
+        return getCartProducts(user);
     }
+
+    public List<ProductDto> removeFromCart(String username, int id) {
+        Users user = userRepository.findByEmailIgnoreCaseAndDisabledFalse(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Unexpected error."));
+
+        Products product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found."));
+
+        if (!cartRepository.existsByUserAndProduct(user, product)) {
+            throw new ResourceNotFoundException("Product not in cart.");
+        }
+
+        // Shouldn't fail
+        Carts oldProduct = cartRepository.findByUserAndProduct(user, product)
+                .orElseThrow();
+
+        cartRepository.delete(oldProduct);
+
+        // Return the full cart formatted properly
+        return getCartProducts(user);
+    }
+
+
+    // UTILS //
 
     public List<ProductDto> getCartProducts(Users user) {
         List<ProductDto> products = new ArrayList<>();
@@ -96,5 +150,11 @@ public class CartService {
         }
 
         return products;
+    }
+
+    public void checkQuantity(Products product, int quantityRequested) {
+        if (product.getQuantity() - quantityRequested < 0) {
+            throw new UnauthorizedException("Requested product quantity is too high.");
+        }
     }
 }
