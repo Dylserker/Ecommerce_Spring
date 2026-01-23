@@ -1,7 +1,9 @@
 package com.judy.ecommerce.backend.repository;
 
+import com.judy.ecommerce.backend.RoleEnum;
 import com.judy.ecommerce.backend.entity.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.Optional;
 
@@ -17,4 +19,8 @@ public interface UserRepository extends JpaRepository<Users, Long> {
     // Check if the email exists
     // Case insensitive and user must be active
     boolean existsByEmailIgnoreCaseAndDisabledFalse(String email);
+
+    // Check if user with specific role exists
+    // Should only be used to create an admin user by the initializer if there are none
+    boolean existsByRole(@PathVariable RoleEnum role);
 }
