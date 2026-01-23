@@ -1,5 +1,6 @@
 package com.judy.ecommerce.backend.repository;
 
+import com.judy.ecommerce.backend.entity.Categories;
 import com.judy.ecommerce.backend.entity.Products;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -40,4 +41,6 @@ public interface ProductRepository extends JpaRepository<Products, Long> {
 
     /// Return a list of products containing the keyword, doesn't check for disabled
     List<Products> findAllByNameContains(String name);
+
+    List<Products> findByCategory(Categories category);
 }

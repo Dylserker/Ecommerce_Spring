@@ -34,11 +34,18 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
+                        // ADMIN ROUTES //
                         .requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN")
+
+                        // OPEN ROUTES //
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/product/**").permitAll()
-                        .requestMatchers("/error").permitAll()
+                        .requestMatchers("/api/category/**").permitAll()
+
+                        // OTHER API ROUTES -> AUTHENTICATED //
                         .requestMatchers("/api/**").authenticated()
+
+                        // OTHER NON-API ROUTES -> OPEN //
                         .anyRequest().permitAll()
                 )
                 .exceptionHandling(exceptionHandling -> exceptionHandling
