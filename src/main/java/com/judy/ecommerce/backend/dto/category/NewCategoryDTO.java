@@ -2,7 +2,8 @@ package com.judy.ecommerce.backend.dto.category;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 public record NewCategoryDTO(
-        @NotBlank @Max(64) String name
+        @NotBlank @Size(max=64) String name
 ) {}
