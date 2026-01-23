@@ -1,0 +1,1 @@
+INSERT INTO "CATEGORIES" VALUES (1, 'undefined');

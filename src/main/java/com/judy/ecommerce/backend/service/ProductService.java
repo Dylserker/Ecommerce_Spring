@@ -174,8 +174,12 @@ public class ProductService {
     }
 
     private ProductDTO setProduct(Products targetProduct, NewProductDTO productInfos) {
-        // Check and get the category
-        Categories category = categoryRepository.findById(productInfos.category())
+        // Check and get the category, if not present, default to 1 -> undefined
+        Categories category = categoryRepository.findById(
+                productInfos.category().isPresent()
+                        ? productInfos.category().get()
+                        : 1
+                )
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found."));
 
         targetProduct.setName(productInfos.name());

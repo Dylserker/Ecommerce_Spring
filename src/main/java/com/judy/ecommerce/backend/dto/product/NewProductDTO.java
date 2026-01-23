@@ -9,7 +9,7 @@ import java.util.Optional;
 public record NewProductDTO(
         @NotBlank @Max(255) String name,
         @NotBlank @Max(5000) String description,
-        int category,
+        Optional<Integer> category,
         @Min(0) double price,
         @Min(0) int quantity,
         boolean disabled
