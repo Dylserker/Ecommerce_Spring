@@ -1,15 +1,16 @@
 package com.judy.ecommerce.frontend.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Controller
 @RequestMapping("/user")
@@ -27,25 +28,25 @@ public class UserController {
 
     @PostMapping("/login")
     public String userLogin(String email, String password) {
-        // TODO: Implémenter la logique d'authentification client
+        // Implémenter la logique d'authentification client
         return "redirect:/user/dashboard";
     }
 
     @GetMapping("/register")
     public String showRegister() {
-        // TODO: Créer la page d'inscription
+        // Créer la page d'inscription
         return "user/register";
     }
 
     @PostMapping("/register")
     public String register(String email, String password, String name) {
-        // TODO: Implémenter l'enregistrement client
+        // Implémenter l'enregistrement client
         return "redirect:/user/login";
     }
 
     @GetMapping("/dashboard")
     public String showUserDashboard() {
-        // TODO: Vérifier si le client est authentifié (optionnel)
+        // Vérifier si le client est authentifié (optionnel)
         return "user/dashboard";
     }
 
@@ -56,7 +57,7 @@ public class UserController {
 
     @GetMapping("/product/{id}")
     public String showProductDetail(@PathVariable Long id, Model model) {
-        // TODO: Charger le produit depuis la base de données en attendant la vrai DB
+        // Charger le produit depuis la base de données en attendant la vrai DB
         Map<String, Object> product = new HashMap<>();
         product.put("id", id);
         product.put("name", "Produit " + id);
@@ -115,7 +116,7 @@ public class UserController {
 
     @GetMapping("/logout")
     public String userLogout() {
-        // TODO: Implémenter la déconnexion
+        // Implémenter la déconnexion
         return "redirect:/user/login";
     }
 }

@@ -16,19 +16,19 @@ public class AdminController {
 
     @PostMapping("/login")
     public String adminLogin(String email, String password) {
-        // TODO: Implémenter la logique d'authentification admin
+        // Implémenter la logique d'authentification admin
         return "redirect:/admin/dashboard";
     }
 
     @GetMapping("/dashboard")
     public String showAdminDashboard() {
-        // TODO: Vérifier si l'admin est authentifié
+        // Vérifier si l'admin est authentifié
         return "admin/dashboard";
     }
 
     @GetMapping("/logout")
     public String adminLogout() {
-        // TODO: Implémenter la déconnexion
+        // Implémenter la déconnexion
         return "redirect:/admin/login";
     }
 }

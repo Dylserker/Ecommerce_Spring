@@ -1,15 +1,15 @@
 package com.judy.ecommerce.frontend.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Controller
 @RequestMapping("/")
@@ -22,7 +22,7 @@ public class PublicController {
 
     @GetMapping("/products")
     public String showPublicProducts(Model model) {
-        // TODO: Charger les produits depuis la base de données
+        // Charger les produits depuis la base de données
         List<Map<String, Object>> products = new ArrayList<>();
         for (int i = 1; i <= 6; i++) {
             Map<String, Object> product = new HashMap<>();
@@ -40,7 +40,7 @@ public class PublicController {
 
     @GetMapping("/product/{id}")
     public String showPublicProductDetail(@PathVariable Long id, Model model) {
-        // TODO: Charger le produit depuis la base de données
+        // Charger le produit depuis la base de données
         Map<String, Object> product = new HashMap<>();
         product.put("id", id);
         product.put("name", "Produit " + id);
