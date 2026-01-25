@@ -15,13 +15,15 @@
 
         <div class="product-detail">
             <div class="product-image-section">
-                <img th:src="${product.imageUrl}" alt="Produit" class="product-main-image">
+                <img id="mainProductImage" th:src="${product.imageUrl}" alt="Produit" class="product-main-image">
                 <div class="product-thumbnails">
-                    <img th:src="${product.imageUrl}" alt="Miniature 1" class="thumbnail">
-                    <img th:src="${product.imageUrl}" alt="Miniature 2" class="thumbnail">
-                    <img th:src="${product.imageUrl}" alt="Miniature 3" class="thumbnail">
+                    <img th:src="${product.imageUrl}" alt="Miniature 1" class="thumbnail" id="thumb1">
+                    <img th:src="${product.imageUrl}" alt="Miniature 2" class="thumbnail" id="thumb2">
+                    <img th:src="${product.imageUrl}" alt="Miniature 3" class="thumbnail" id="thumb3">
                 </div>
             </div>
+
+    
 
             <div class="product-info-section">
                 <div class="breadcrumb">
@@ -51,11 +53,13 @@
                     </div>
                 </div>
 
-                <div class="login-notice" style="background: #FFF3E0; padding: 15px; border-radius: 8px; margin: 10px 0 20px 0; border-left: 4px solid #FF9800;">
-                    <p style="margin: 0; color: #E65100; font-weight: 600;">⚠️ Connectez-vous pour ajouter au panier</p>
-                    <a th:href="@{/user/login}" class="btn-primary" style="display: inline-block; margin-top: 10px; text-decoration: none;">Se connecter</a>
-                    <span style="margin: 0 10px;">ou</span>
-                    <a th:href="@{/user/register}" class="btn-secondary" style="display: inline-block; text-decoration: none;">Créer un compte</a>
+                <div class="login-notice" style="background: #FFF3E0; padding: 15px; border-radius: 8px; margin: 10px 0 20px 0; border-left: 4px solid #FF9800; display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                    <span style="color: #E65100; font-weight: 600; white-space: nowrap; margin-right: 20px;">⚠️ Connectez-vous pour ajouter au panier</span>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <a th:href="@{/user/login}" class="btn-primary" style="text-decoration: none; width: 140px; height: 40px; padding: 0 20px; text-align: center; margin: 0; white-space: nowrap; display: flex; align-items: center; justify-content: center;">Se connecter</a>
+                        <span style="margin: 0 10px;">ou</span>
+                        <a th:href="@{/user/register}" class="btn-secondary" style="text-decoration: none; width: 140px; height: 40px; padding: 0 20px; text-align: center; margin: 0; white-space: nowrap; display: flex; align-items: center; justify-content: center;">Créer un compte</a>
+                    </div>
                 </div>
 
                 <div class="product-descriptif">
@@ -67,4 +71,5 @@
     </div>
 
 </body>
+<script th:src="@{/js/user/product-carousel.js}"></script>
 </html>
