@@ -23,4 +23,8 @@ public interface UserRepository extends JpaRepository<Users, Long> {
     // Check if user with specific role exists
     // Should only be used to create an admin user by the initializer if there are none
     boolean existsByRole(@PathVariable RoleEnum role);
+
+    // Count users by role
+    // Should only take "ADMIN" as parameter to avoid deleting all admins
+    int countUsersByRoleIs(RoleEnum role);
 }

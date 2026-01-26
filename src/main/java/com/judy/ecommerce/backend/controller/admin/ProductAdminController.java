@@ -4,6 +4,7 @@ import com.judy.ecommerce.backend.dto.product.NewProductDTO;
 import com.judy.ecommerce.backend.dto.product.ProductDTO;
 import com.judy.ecommerce.backend.dto.search.FiltersDTO;
 import com.judy.ecommerce.backend.service.ProductService;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,18 +33,18 @@ public class ProductAdminController {
 
     @GetMapping("/search/{input}")
     public ResponseEntity<List<ProductDTO>> searchProductsAdmin(@PathVariable String input,
-                                                                @RequestBody(required=false) FiltersDTO filters) {
+                                                                @RequestBody(required=false) @Valid FiltersDTO filters) {
         return ResponseEntity.ok(productService.searchProducts(input, filters, true));
     }
 
     @PostMapping()
-    public ResponseEntity<ProductDTO> addNewProduct(@RequestBody NewProductDTO newProduct) {
+    public ResponseEntity<ProductDTO> addNewProduct(@RequestBody @Valid NewProductDTO newProduct) {
         return ResponseEntity.status(201).body(productService.addNewProduct(newProduct));
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<ProductDTO> editProduct(@PathVariable long id,
-                                                  @RequestBody NewProductDTO editedProduct) {
+                                                  @RequestBody @Valid NewProductDTO editedProduct) {
         return ResponseEntity.ok(productService.editProduct(id, editedProduct));
     }
 
