@@ -1,8 +1,3 @@
-/**
- * User Profile Management
- * Gestion du profil utilisateur
- */
-
 function switchVTab(tabId, ev) {
     document.querySelectorAll('.v-tab-btn').forEach(btn => btn.classList.remove('active'));
     if (ev && ev.currentTarget) {

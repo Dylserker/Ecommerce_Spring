@@ -30,11 +30,40 @@ body {
 }
 
 /* Admin navbar (mix admin+user layout) */
+
 .navbar.admin-nav {
-    background: linear-gradient(135deg, #738293 0%, #7f8d9b 100%);
-    color: #f3f4f6;
+    background: linear-gradient(135deg, #c0392b 0%, #a93226 100%) !important;
+    color: #fff !important;
     box-shadow: 0 1px 4px rgba(0,0,0,0.18);
     padding: 0;
+}
+
+.navbar.admin-nav .navbar-logo {
+    color: #fff !important;
+}
+
+.navbar.admin-nav .navbar-link,
+.navbar.admin-nav .category-link {
+    color: #fff !important;
+}
+
+.navbar.admin-nav .navbar-link.active,
+.navbar.admin-nav .category-link.active {
+    background: #a93226 !important;
+    color: #fff !important;
+    border-radius: 5px;
+}
+
+.navbar.admin-nav .navbar-link:hover,
+.navbar.admin-nav .category-link:hover {
+    color: #f9e79f !important;
+}
+
+.navbar.admin-nav .navbar-search input,
+.navbar.admin-nav .search-bar {
+    background: #fff;
+    color: #c0392b;
+    border: 1px solid #a93226;
 }
 
 .navbar.admin-nav .navbar-top {
