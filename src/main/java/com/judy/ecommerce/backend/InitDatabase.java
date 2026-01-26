@@ -23,18 +23,22 @@ public class InitDatabase implements InitializingBean {
         this.passwordEncoder = passwordEncoder;
     }
 
+    /// Failsafe to ensure that an admin user always exists when starting the app
     @Override
     public void afterPropertiesSet() throws Exception {
-        if (userRepository.existsByRole(RoleEnum.ADMIN)) {
+        if (userRepository.existsByRoleAndDisabledFalse(RoleEnum.ADMIN)) {
             return;
         }
 
-        Users adminUser = new Users();
+        Users adminUser = userRepository.findByEmailIgnoreCase(environment.getRequiredProperty("ADMIN_EMAIL"))
+                .orElse(new Users());
+
         adminUser.setLastname("ADMIN");
         adminUser.setFirstname("ADMIN");
         adminUser.setEmail(environment.getRequiredProperty("ADMIN_EMAIL"));
         adminUser.setPassword(passwordEncoder.encode(environment.getRequiredProperty("ADMIN_PASSWORD")));
         adminUser.setRole(RoleEnum.ADMIN);
+        adminUser.setDisabled(false);
 
         userRepository.save(adminUser);
     }

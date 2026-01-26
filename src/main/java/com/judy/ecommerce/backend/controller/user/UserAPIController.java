@@ -28,7 +28,7 @@ public class UserAPIController {
 
     @PatchMapping()
     public ResponseEntity<UserDTO> updateSelfInfo(@AuthenticationPrincipal UserDetails userDetails,
-                                                  @RequestBody @Valid EditUserDTO editUserDTO) {
+                                                  @RequestBody EditUserDTO editUserDTO) {
         return ResponseEntity.ok(userService.editSelfInfo(userDetails, editUserDTO));
     }
 

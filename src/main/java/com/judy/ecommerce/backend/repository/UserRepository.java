@@ -12,7 +12,7 @@ public interface UserRepository extends JpaRepository<Users, Long> {
     // User must be active
     Optional<Users> findByIdAndDisabledFalse(long id);
 
-    // Return the User object based on the username
+    // Return the User object based on the email
     // Case insensitive and user must be active
     Optional<Users> findByEmailIgnoreCaseAndDisabledFalse(String email);
 
@@ -20,11 +20,18 @@ public interface UserRepository extends JpaRepository<Users, Long> {
     // Case insensitive and user must be active
     boolean existsByEmailIgnoreCaseAndDisabledFalse(String email);
 
-    // Check if user with specific role exists
-    // Should only be used to create an admin user by the initializer if there are none
-    boolean existsByRole(@PathVariable RoleEnum role);
-
     // Count users by role
     // Should only take "ADMIN" as parameter to avoid deleting all admins
     int countUsersByRoleIs(RoleEnum role);
+
+
+    // INITIALIZER //
+
+    // Check if active user with specific role exists
+    // Should ONLY be used to create an admin user by the initializer if there are none
+    boolean existsByRoleAndDisabledFalse(@PathVariable RoleEnum role);
+
+    // Return the User object based on the email
+    // Used ONLY to get the default admin user in case its role have been changed to USER
+    Optional<Users> findByEmailIgnoreCase(String email);
 }

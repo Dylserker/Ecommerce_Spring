@@ -43,20 +43,29 @@ public class UserService {
                 .orElseThrow();
 
         // If present, check firstname and lastname format, must be only letters and '-'
+        // Also check for size <= 64 (regex already checks for >= 1)
         if (editUserDTO.lastName().isPresent()) {
-            if (!editUserDTO.lastName().get().matches("^[a-zA-Z-]+$")) {
-                throw new InvalidFormatException("Name can only contain letters and '-'");
+            String lastName = editUserDTO.lastName().get();
+            if (!lastName.matches("^[a-zA-Z-]+$")
+                || lastName.length() > 64) {
+                throw new InvalidFormatException(
+                        "Name can only contain letters and '-', must not be empty and cannot exceed 64 characters long"
+                );
             }
 
-            user.setLastname(editUserDTO.lastName().get());
+            user.setLastname(lastName);
         }
 
         if (editUserDTO.firstName().isPresent()) {
-            if (!editUserDTO.firstName().get().matches("^[a-zA-Z-]+$")) {
-                throw new InvalidFormatException("Name can only contain letters and '-'");
+            String firstName = editUserDTO.firstName().get();
+            if (!firstName.matches("^[a-zA-Z-]+$")
+                    || firstName.length() > 64) {
+                throw new InvalidFormatException(
+                        "Name can only contain letters and '-', must not be empty and cannot exceed 64 characters long"
+                );
             }
 
-            user.setFirstname(editUserDTO.firstName().get());
+            user.setFirstname(firstName);
         }
 
         userRepository.save(user);
@@ -105,9 +114,12 @@ public class UserService {
         Users user = userRepository.findByEmailIgnoreCaseAndDisabledFalse(userDetails.getUsername())
                 .orElseThrow();
 
-        // Make sure the user table contains at least another admin to avoid being locked out
-        if (userRepository.countUsersByRoleIs(RoleEnum.ADMIN) < 2) {
-            throw new UnauthorizedException("Cannot disable user, there must be at least 1 active admin.");
+        // Only if the user is an admin
+        if (user.getRole() == RoleEnum.ADMIN) {
+            // Make sure the user table contains at least another admin to avoid being locked out
+            if (userRepository.countUsersByRoleIs(RoleEnum.ADMIN) < 2) {
+                throw new UnauthorizedException("Cannot disable user, there must be at least 1 active admin.");
+            }
         }
 
         user.setDisabled(true);
@@ -131,24 +143,6 @@ public class UserService {
         return userToDTO(user);
     }
 
-    public void deleteUserByIdAdmin(UserDetails userDetails, long id) {
-        // Shouldn't fail
-        Users selfUser = userRepository.findByEmailIgnoreCaseAndDisabledFalse(userDetails.getUsername())
-                .orElseThrow();
-
-        // Do not disable its own account this way
-        if (selfUser.getId() == id) {
-            throw new UnauthorizedException("Cannot disable your account this way.");
-        }
-
-        // Get the account to disable
-        Users user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
-
-        user.setDisabled(true);
-        userRepository.save(user);
-    }
-
     public UserDTO editRoleAdmin(UserDetails userDetails, long id, RoleEnum role) {
         // Shouldn't fail
         Users selfUser = userRepository.findByEmailIgnoreCaseAndDisabledFalse(userDetails.getUsername())
@@ -167,6 +161,24 @@ public class UserService {
         userRepository.save(user);
 
         return userToDTO(user);
+    }
+
+    public void deleteUserByIdAdmin(UserDetails userDetails, long id) {
+        // Shouldn't fail
+        Users selfUser = userRepository.findByEmailIgnoreCaseAndDisabledFalse(userDetails.getUsername())
+                .orElseThrow();
+
+        // Do not disable its own account this way
+        if (selfUser.getId() == id) {
+            throw new UnauthorizedException("Cannot disable your account this way.");
+        }
+
+        // Get the account to disable
+        Users user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+
+        user.setDisabled(true);
+        userRepository.save(user);
     }
 
 
