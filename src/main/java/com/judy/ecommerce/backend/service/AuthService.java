@@ -15,6 +15,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+
 
 @Service
 public class AuthService {
@@ -65,8 +67,12 @@ public class AuthService {
         userRepository.save(user);
 
         // Return the JWT token
-        String token = jwtService.generateToken(user.getId());
-        return new AuthDTO(token);
+        String token = jwtService.generateToken(user);
+        Date expiration = jwtService.extractExpiration(token);
+        return new AuthDTO(
+                token,
+                expiration
+        );
     }
 
     public AuthDTO login(LoginDTO request) {
@@ -82,7 +88,11 @@ public class AuthService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found."));
 
         // Return the JWT token
-        String token = jwtService.generateToken(user.getId());
-        return new AuthDTO(token);
+        String token = jwtService.generateToken(user);
+        Date expiration = jwtService.extractExpiration(token);
+        return new AuthDTO(
+                token,
+                expiration
+        );
     }
 }

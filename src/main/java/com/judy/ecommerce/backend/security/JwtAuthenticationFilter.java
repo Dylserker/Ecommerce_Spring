@@ -1,6 +1,9 @@
 package com.judy.ecommerce.backend.security;
 
 import com.judy.ecommerce.backend.repository.UserRepository;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -42,21 +45,35 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         final String token = authHeader.substring(7);
-        final long id = Long.parseLong(jwtService.extractId(token));
 
-        if (SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userRepository.findByIdAndDisabledFalse(id)
-                    .map(user -> new org.springframework.security.core.userdetails.User(
-                            user.getEmail(),
-                            user.getPassword(),
-                            List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().toString()))
-                    ))
-                    .orElseThrow(() -> new UsernameNotFoundException("User not found."));
-            if (jwtService.isTokenValid(token)) {
+        try {
+            if (SecurityContextHolder.getContext().getAuthentication() == null
+                    && jwtService.isTokenValid(token)) {
+
+                Claims claims = jwtService.parseToken(token);
+                long id = Long.parseLong(claims.getId());
+
+                UserDetails userDetails = userRepository.findByIdAndDisabledFalse(id)
+                        .map(user -> new User(
+                                user.getEmail(),
+                                user.getPassword(),
+                                List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole()))
+                        ))
+                        .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
                 UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                        new UsernamePasswordAuthenticationToken(
+                                userDetails,
+                                null,
+                                userDetails.getAuthorities()
+                        );
+
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
+        } catch (JwtException e) {
+            SecurityContextHolder.clearContext();
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
         }
 
         filterChain.doFilter(request, response);
