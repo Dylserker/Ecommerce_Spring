@@ -1,4 +1,4 @@
-package com.judy.ecommerce.backend.controller;
+package com.judy.ecommerce.backend.controller.user;
 
 import com.judy.ecommerce.backend.dto.user.EditUserDTO;
 import com.judy.ecommerce.backend.dto.user.EmailDTO;
@@ -12,7 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/user/me")
 public class UserAPIController {
 
     private final UserService userService;
