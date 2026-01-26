@@ -1,15 +1,52 @@
-<!-- CRUD Commandes -->
 <!DOCTYPE html>
-<html lang="fr">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRUD Utilisateurs</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <title>Dashboard admin - crud utilisateur</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"> 
+    <link rel="stylesheet" th:href="@{/css/admin/product-list.css}">       
 </head>
-<body>
-    <div th:replace="fragments/navbar :: admin-navbar('dashboard')"></div>
-    <h1>Gestion CRUD des Utilisateurs</h1>
-    <!-- À compléter avec la liste, création, édition, suppression des utilisateurs -->
+<body class="dashboard-page">
+    <div th:replace="fragments/navbar :: admin-navbar('users')"></div>
+
+    <div class="container">
+        <div class="admin-table-container">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>nom</th>
+                        <th>prénom</th>
+                        <th>sexe</th>
+                        <th>role</th>
+                        <th>email</th>
+                        <th>mdp hash</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                    <tr class="user-row" th:each="user : ${users}">
+                        <td class="user-details">
+                            <div class="user-detail-text" th:text="${user.name} + ' / ' + ${user.firstName} + ' / ' + ${user.gender} + ' / ' + ${user.role} + ' / ' + ${user.email} + ' / ' + ${user.passwordHash}">nom / prénom / sexe / role / email / mdp hash</div>
+                        </td>
+                        <td class="user-actions">
+                            <button class="btn-edit" th:onclick="'editUser(' + ${user.id} + ')'" title="Éditer">Modifier</button>
+                            <button class="btn-delete" th:onclick="'deleteUser(' + ${user.id} + ')'" title="Supprimer">supprimer</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+        <div id="noResults" class="no-results" style="display: none;">
+            <p>Aucun produit ne correspond à vos critères de recherche.</p>
+        </div>
+
+        <div class="pagination-controls">
+            <button class="page-btn">← Précédent</button>
+            <span class="page-info">Page 1 sur 5</span>
+            <button class="page-btn">Suivant →</button>
+        </div>
+    </div>     
 </body>
 </html>

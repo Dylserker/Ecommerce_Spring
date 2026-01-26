@@ -3,54 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard admin - crud produit</title>
+    <title>List Product</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
-    <link rel="stylesheet" th:href="@{/css/admin/product-list.css}">
-        
+    <link rel="stylesheet" th:href="@{/css/user/product-list.css}">
 </head>
 <body class="dashboard-page">
-    <div th:replace="fragments/navbar :: admin-navbar('products')"></div>
+    <div th:replace="~{fragments/navbar :: admin-navbar('products')}"></div>
 
     <div class="container">
-        <div class="admin-table-container">
-            <table class="admin-table">
-                <thead>
-                    <tr>
-                        <th>titre</th>
-                        <th>descriptif</th>
-                        <th>category</th>
-                        <th>prix</th>
-                        <th>stock</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="productsTableBody">
-                    <tr class="product-row" th:each="product : ${products}">
-                        <td class="product-details">
-                            <div class="product-detail-text" th:text="${product.name} + ' / ' + ${product.description} + ' / ' + ${product.category} + ' / €' + ${product.price} + ' / ' + ${product.stock}">titre / descriptif / category / prix / stock</div>
-                        </td>
-                        <td class="product-actions">
-                            <button class="btn-edit" th:onclick="'editProduct(' + ${product.id} + ')'" title="Éditer">Modifier</button>
-                            <button class="btn-delete" th:onclick="'deleteProduct(' + ${product.id} + ')'" title="Supprimer">supprimer</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="list-product-wrapper">
+            <div class="filter-sidebar">
+                <h3>Filtre:</h3>
+                <div class="filter-search">
+                    <label>Search bar</label>
+                    <input type="text" placeholder="Rechercher..." class="filter-input">
+                </div>
+                <div class="filter-price">
+                    <label>prix min / max</label>
+                    <div class="price-inputs">
+                        <input type="number" placeholder="Min" class="price-min">
+                        <input type="number" placeholder="Max" class="price-max">
+                    </div>
+                </div>
+                <div class="filter-system">
+                    <label>Système</label>
+                    <select class="filter-select">
+                        <option>Tous</option>
+                        <option>Système 1</option>
+                        <option>Système 2</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="products-section">
+                <div class="products-list">
+                    <div class="product-row" th:each="product : ${products}">
+                        <div class="product-item-img">Photo</div>
+                        <div class="product-item-info">
+                            <h4 th:text="${product.name}">Titre</h4>
+                            <p th:text="${product.description}">Description</p>
+                        </div>
+                        <div class="product-item-price" th:text="'€ ' + ${product.price}">Prix</div>
+                        <div class="product-item-actions">
+                            <a th:href="@{/admin/product/{id}(id=${product.id})}" class="btn-secondary" style="text-decoration: none;">Voir</a>
+                            <button class="btn-primary">Panier</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pagination">
+                    <span>Pagination</span>
+                </div>
+            </div>
         </div>
     </div>
 
-        <div id="noResults" class="no-results" style="display: none;">
-            <p>Aucun produit ne correspond à vos critères de recherche.</p>
-        </div>
 
-        <div class="pagination-controls">
-            <button class="page-btn">← Précédent</button>
-            <span class="page-info">Page 1 sur 5</span>
-            <button class="page-btn">Suivant →</button>
-        </div>
-    </div>
-
-    <script src="/js/admin/product-list.js"></script>
-     
 </body>
 </html>

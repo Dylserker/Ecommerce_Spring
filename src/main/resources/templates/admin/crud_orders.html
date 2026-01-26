@@ -1,15 +1,54 @@
-<!-- CRUD Commandes -->
 <!DOCTYPE html>
-<html lang="fr">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRUD Commandes</title>
+    <title>Dashboard admin - crud commandes</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/product-list.css}">  
 </head>
-<body>
-    <div th:replace="fragments/navbar :: admin-navbar('dashboard')"></div>
-    <h1>Gestion CRUD des Commandes</h1>
-    <!-- À compléter avec la liste, création, édition, suppression des commandes -->
+<body class="dashboard-page">
+    <div th:replace="fragments/navbar :: admin-navbar('orders')"></div>
+
+    <div class="container">
+        <div class="admin-table-container">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Nom utilisateur</th>
+                        <th>Email</th>
+                        <th>Numéro de commande</th>
+                        <th>Date</th>
+                        <th>Total</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="ordersTableBody">
+                    <tr class="order-row" th:each="order : ${orders}">
+                        <td th:text="${order.userName}">Nom utilisateur</td>
+                        <td th:text="${order.userEmail}">Email</td>
+                        <td th:text="${order.orderNumber}">Numéro</td>
+                        <td th:text="${order.orderDate}">Date</td>
+                        <td th:text="'€' + ${order.total}">Total</td>
+                        <td class="order-actions">
+                            <button class="btn-edit" th:onclick="'editOrder(' + ${order.id} + ')'" title="Éditer">Modifier</button>
+                            <button class="btn-delete" th:onclick="'deleteOrder(' + ${order.id} + ')'" title="Supprimer">supprimer</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+        <div id="noResults" class="no-results" style="display: none;">
+            <p>Aucun produit ne correspond à vos critères de recherche.</p>
+        </div>
+
+        <div class="pagination-controls">
+            <button class="page-btn">← Précédent</button>
+            <span class="page-info">Page 1 sur 5</span>
+            <button class="page-btn">Suivant →</button>
+        </div>
+    </div>     
 </body>
 </html>
