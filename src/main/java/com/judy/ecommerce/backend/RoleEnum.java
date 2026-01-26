@@ -6,7 +6,7 @@ public enum RoleEnum {
 
     private final String role;
 
-    private RoleEnum(String role) {
+    RoleEnum(String role) {
         this.role = role;
     }
 
