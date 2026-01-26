@@ -1,4 +1,4 @@
-package com.judy.ecommerce.backend.controller;
+package com.judy.ecommerce.backend.controller.user;
 
 import com.judy.ecommerce.backend.dto.product.ProductDTO;
 import com.judy.ecommerce.backend.service.CartService;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/cart")
+@RequestMapping("/api/user/cart")
 public class CartAPIController {
 
     private final CartService cartService;
