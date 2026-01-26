@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
 </head>
 <body>
+    <!-- User Navbar -->
     <nav th:fragment="user-navbar" class="navbar">
         <div class="navbar-top">
             <a th:href="@{/user/dashboard}" class="navbar-logo">Logo</a>
@@ -23,6 +24,7 @@
         </div>
     </nav>
 
+    <!-- Admin Navbar -->
     <nav th:fragment="admin-navbar(activePage)" class="navbar admin-nav">
         <div class="navbar-top">
             <a th:href="@{/admin/dashboard}" class="navbar-logo">Logo</a>

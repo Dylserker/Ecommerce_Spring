@@ -122,7 +122,7 @@ public class AdminController {
     }
 
     @GetMapping("/profile")
-    public String showAdminProfile() {
+    public String showAdminProfile(Model model) {
         return "admin/profile";
     }
 

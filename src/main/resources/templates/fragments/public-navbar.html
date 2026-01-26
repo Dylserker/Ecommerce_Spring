@@ -14,9 +14,9 @@
         </div>
         <div class="navbar-categories">
             <a th:href="@{/products}" class="category-link">Tous les produits</a>
-            <a href="#" class="category-link">Ordinateurs</a>
-            <a href="#" class="category-link">Smartphones</a>
-            <a href="#" class="category-link">Accessoires</a>
+            <a th:href="@{/user/products(category='ordinateur')}" class="category-link">Ordinateurs</a>
+            <a th:href="@{/user/products(category='smartphone')}" class="category-link">Smartphones</a>
+            <a th:href="@{/user/products(category='accessoire')}" class="category-link">Accessoires</a>
         </div>
     </nav>
 </body>
