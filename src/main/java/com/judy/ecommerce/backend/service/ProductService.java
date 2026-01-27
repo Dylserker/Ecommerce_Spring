@@ -165,8 +165,7 @@ public class ProductService {
 
     // UTILS //
 
-    // Let this public static, used in CartService
-    public static ProductDTO productToDTO(Products product) {
+    private ProductDTO productToDTO(Products product) {
         return new ProductDTO(
                 product.getId(),
                 product.getName(),

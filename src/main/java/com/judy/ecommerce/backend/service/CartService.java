@@ -1,14 +1,13 @@
 package com.judy.ecommerce.backend.service;
 
-import com.judy.ecommerce.backend.dto.product.ProductDTO;
-import com.judy.ecommerce.backend.entity.Carts;
-import com.judy.ecommerce.backend.entity.Products;
-import com.judy.ecommerce.backend.entity.Users;
+import com.judy.ecommerce.backend.dto.order.NewOrderDTO;
+import com.judy.ecommerce.backend.dto.order.OrderDTO;
+import com.judy.ecommerce.backend.dto.order.OrderProductDTO;
+import com.judy.ecommerce.backend.dto.cart.CartProductDTO;
+import com.judy.ecommerce.backend.entity.*;
 import com.judy.ecommerce.backend.exception.ResourceNotFoundException;
 import com.judy.ecommerce.backend.exception.UnauthorizedException;
-import com.judy.ecommerce.backend.repository.CartRepository;
-import com.judy.ecommerce.backend.repository.ProductRepository;
-import com.judy.ecommerce.backend.repository.UserRepository;
+import com.judy.ecommerce.backend.repository.*;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -21,23 +20,31 @@ public class CartService {
     private final UserRepository userRepository;
     private final CartRepository cartRepository;
     private final ProductRepository productRepository;
+    private final OrderRepository orderRepository;
+    private final OrderProductRepository orderProductRepository;
+    private final ConfigRepository configRepository;
 
     public CartService(UserRepository userRepository,
                        CartRepository cartRepository,
-                       ProductRepository productRepository) {
+                       ProductRepository productRepository,
+                       OrderRepository orderRepository,
+                       OrderProductRepository orderProductRepository, ConfigRepository configRepository) {
         this.userRepository = userRepository;
         this.cartRepository = cartRepository;
         this.productRepository = productRepository;
+        this.orderRepository = orderRepository;
+        this.orderProductRepository = orderProductRepository;
+        this.configRepository = configRepository;
     }
 
-    public List<ProductDTO> getCart(String username) {
+    public List<CartProductDTO> getCart(String username) {
         Users user = userRepository.findByEmailIgnoreCaseAndDisabledFalse(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Unexpected error."));
 
         return getCartProducts(user);
     }
 
-    public List<ProductDTO> addToCart(String username, int id, int quantity) {
+    public List<CartProductDTO> addToCart(String username, int id, int quantity) {
         Users user = userRepository.findByEmailIgnoreCaseAndDisabledFalse(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Unexpected error."));
 
@@ -78,7 +85,7 @@ public class CartService {
         return getCartProducts(user);
     }
 
-    public List<ProductDTO> updateQuantityInCart(String username, int id, int quantity) {
+    public List<CartProductDTO> updateQuantityInCart(String username, int id, int quantity) {
         // Redirect to the delete function if quantity = 0
         if (quantity == 0) {
             return removeFromCart(username, id);
@@ -108,11 +115,12 @@ public class CartService {
         return getCartProducts(user);
     }
 
-    public List<ProductDTO> removeFromCart(String username, int id) {
+    public List<CartProductDTO> removeFromCart(String username, int id) {
         Users user = userRepository.findByEmailIgnoreCaseAndDisabledFalse(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Unexpected error."));
 
-        Products product = productRepository.findByIdAndDisabledFalse(id)
+        // Don't check for disabled to allow removing a disabled product
+        Products product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found."));
 
         if (!cartRepository.existsByUserAndProduct(user, product)) {
@@ -129,16 +137,111 @@ public class CartService {
         return getCartProducts(user);
     }
 
+    public OrderDTO payOrder(String username, NewOrderDTO orderInfos) {
+        Users user = userRepository.findByEmailIgnoreCaseAndDisabledFalse(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Unexpected error."));
+
+        List<Carts> cartProducts = cartRepository.findAllByUser(user);
+
+        // Get the current shipping fees
+        AppConfig config = configRepository.findByConfigName("shippingFees").orElseThrow();
+        double shippingFees = Double.parseDouble(config.getConfigValue());
+
+        if (cartProducts.isEmpty()) {
+            throw new UnauthorizedException("Cart is empty.");
+        }
+
+        // Check if requested quantity is still ok
+        // Also check for disabled products
+        for (Carts cart : cartProducts) {
+            Products product = cart.getProduct();
+
+            if (cart.getProduct().isDisabled()) {
+                throw new UnauthorizedException(product.getName() + ": This product cannot be ordered anymore.");
+            }
+
+            checkQuantity(product, cart.getQuantity());
+        }
+
+        // Decrease stock for each product
+        for (Carts cart : cartProducts) {
+            Products product = cart.getProduct();
+            product.setQuantity(product.getQuantity() - cart.getQuantity());
+            productRepository.save(product);
+        }
+
+        // Create the order
+        Orders order = new Orders();
+        order.setUser(user);
+        order.setDeliveryLastName(orderInfos.deliveryLastName());
+        order.setDeliveryFirstName(orderInfos.deliveryFirstName());
+        order.setDeliveryAddress(orderInfos.deliveryAddress());
+        order.setShippingFees(shippingFees);
+        orderRepository.save(order);
+
+        // Move products from cart to order
+        List<OrderProducts> orderProducts = new ArrayList<>();
+        for (Carts cartProduct : cartProducts) {
+            OrderProducts orderProduct = new OrderProducts();
+            orderProduct.setOrder(order);
+            orderProduct.setProduct(cartProduct.getProduct());
+            orderProduct.setPricePaid(cartProduct.getProduct().getSalePrice());
+            orderProduct.setQuantity(cartProduct.getQuantity());
+            orderProductRepository.save(orderProduct);
+            cartRepository.delete(cartProduct);
+            orderProducts.add(orderProduct);
+        }
+
+        return new OrderDTO(
+                order.getId(),
+                order.getUser().getId(),
+                getOrderProducts(orderProducts),
+                orderProductRepository.getPriceSumByOrder(order),
+                order.getShippingFees(),
+                order.getDeliveryLastName(),
+                order.getDeliveryFirstName(),
+                order.getDeliveryAddress(),
+                order.getOrderedAt()
+        );
+    }
+
 
     // UTILS //
 
-    private List<ProductDTO> getCartProducts(Users user) {
-        List<ProductDTO> products = new ArrayList<>();
+    private CartProductDTO productToDTO(Products product, int requestedQuantity) {
+        return new CartProductDTO(
+                product.getId(),
+                product.getName(),
+                product.getPrice(),
+                product.getSalePrice(),
+                product.getSalePercent(),
+                requestedQuantity
+        );
+    }
+
+    private List<CartProductDTO> getCartProducts(Users user) {
+        List<CartProductDTO> products = new ArrayList<>();
         List<Carts> cart = cartRepository.findAllByUser(user);
 
-        for (Carts cartProduct : cart) {
-            Products product = cartProduct.getProduct();
-            products.add(ProductService.productToDTO(product));
+        for (Carts cp : cart) {
+            Products product = cp.getProduct();
+            products.add(productToDTO(product, cp.getQuantity()));
+        }
+
+        return products;
+    }
+
+    private List<OrderProductDTO> getOrderProducts(List<OrderProducts> orderProducts) {
+        List<OrderProductDTO> products = new ArrayList<>();
+
+        for (OrderProducts op : orderProducts) {
+            Products product = op.getProduct();
+            products.add(new OrderProductDTO(
+                    product.getId(),
+                    product.getName(),
+                    product.getSalePrice(),
+                    op.getQuantity()
+            ));
         }
 
         return products;
@@ -146,7 +249,7 @@ public class CartService {
 
     private void checkQuantity(Products product, int quantityRequested) {
         if (product.getQuantity() - quantityRequested < 0) {
-            throw new UnauthorizedException("Requested product quantity is too high.");
+            throw new UnauthorizedException(product.getName() + ": Insufficient stock left.");
         }
     }
 }

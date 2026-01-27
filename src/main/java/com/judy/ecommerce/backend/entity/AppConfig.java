@@ -9,22 +9,15 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
-public class OrderProducts {
+public class AppConfig {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @ManyToOne
-    @JoinColumn(name = "order_id", nullable = false)
-    private Orders order;
-
-    @ManyToOne
-    @JoinColumn(name = "product_id", nullable = false)
-    private Products product;
-
     @Column(nullable = false)
-    private double pricePaid;
+    private String configName;
 
+    // "value" is reserved
     @Column(nullable = false)
-    private int quantity;
+    private String configValue;
 }

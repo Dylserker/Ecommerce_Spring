@@ -25,11 +25,17 @@ public class Orders {
     @JoinColumn(name = "user_id", nullable = false)
     private Users user;
 
-    @Column(length = 20, nullable = false)
-    private String reference;
+    @Column(length = 64, nullable = false)
+    private String deliveryLastName;
+
+    @Column(length = 64, nullable = false)
+    private String deliveryFirstName;
 
     @Column(nullable = false)
     private String deliveryAddress;
+
+    @Column(nullable = false)
+    private double shippingFees;
 
     @CreatedDate
     @Column(nullable = false)

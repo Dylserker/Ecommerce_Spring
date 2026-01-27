@@ -1,7 +1,5 @@
 package com.judy.ecommerce.backend.dto.product;
 
-import java.util.Optional;
-
 public record ProductDTO(
         long id,
         String name,
