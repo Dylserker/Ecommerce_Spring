@@ -1,5 +1,12 @@
 package com.judy.ecommerce.frontend.controller;
 
+import org.springframework.web.client.RestTemplate;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.core.ParameterizedTypeReference;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +22,41 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/")
 public class PublicController {
 
+    @GetMapping("/dashboard")
+    public String showPublicDashboard(Model model) {
+        RestTemplate restTemplate = new RestTemplate();
+        String apiUrl = "http://localhost:8080/api/product";
+        String promoUrl = "http://localhost:8080/api/product/sale";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        List<Map<String, Object>> allProducts = new ArrayList<>();
+        List<Map<String, Object>> promoProducts = new ArrayList<>();
+        try {
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+            ResponseEntity<List<Map<String, Object>>> response = restTemplate.exchange(
+                apiUrl,
+                org.springframework.http.HttpMethod.GET,
+                entity,
+                new ParameterizedTypeReference<List<Map<String, Object>>>() {}
+            );
+            allProducts = response.getBody();
+        } catch (Exception e) {}
+        try {
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+            ResponseEntity<List<Map<String, Object>>> response = restTemplate.exchange(
+                promoUrl,
+                org.springframework.http.HttpMethod.GET,
+                entity,
+                new ParameterizedTypeReference<List<Map<String, Object>>>() {}
+            );
+            promoProducts = response.getBody();
+        } catch (Exception e) {}
+        model.addAttribute("featuredProducts", allProducts != null && allProducts.size() > 0 ? allProducts.subList(0, Math.min(3, allProducts.size())) : new ArrayList<>());
+        model.addAttribute("popularProducts", allProducts != null && allProducts.size() > 3 ? allProducts.subList(3, Math.min(6, allProducts.size())) : new ArrayList<>());
+        model.addAttribute("promoProducts", promoProducts != null ? promoProducts : new ArrayList<>());
+        return "public/dashboard";
+    }
+
     @GetMapping
     public String showHomePage() {
         return "index";
@@ -22,63 +64,48 @@ public class PublicController {
 
     @GetMapping("/products")
     public String showPublicProducts(Model model) {
-        // Charger les produits depuis la base de données
+        RestTemplate restTemplate = new RestTemplate();
+        String apiUrl = "http://localhost:8080/api/product";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
         List<Map<String, Object>> products = new ArrayList<>();
-        for (int i = 1; i <= 6; i++) {
-            Map<String, Object> product = new HashMap<>();
-            product.put("id", (long) i);
-            product.put("name", "Produit " + i);
-            product.put("category", i % 2 == 0 ? "Ordinateurs" : "Smartphones");
-            product.put("price", 149.99 + i * 50);
-            product.put("description", "Description du produit " + i);
-            product.put("imageUrl", "/img/sample-product.jpg");
-            products.add(product);
-        }
+        try {
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+            ResponseEntity<List<Map<String, Object>>> response = restTemplate.exchange(
+                apiUrl,
+                org.springframework.http.HttpMethod.GET,
+                entity,
+                new ParameterizedTypeReference<List<Map<String, Object>>>() {}
+            );
+            products = response.getBody();
+        } catch (Exception e) {}
         model.addAttribute("products", products);
         return "public/product_list";
     }
 
     @GetMapping("/product/{id}")
     public String showPublicProductDetail(@PathVariable Long id, Model model) {
-        // Charger le produit depuis la base de données
+        RestTemplate restTemplate = new RestTemplate();
+        String apiUrl = "http://localhost:8080/api/product/" + id;
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
         Map<String, Object> product = new HashMap<>();
-        product.put("id", id);
-        product.put("name", "Produit " + id);
-        product.put("category", id % 2 == 0 ? "Ordinateurs" : "Smartphones");
-        product.put("price", 199.0);
-        product.put("originalPrice", 249.0);
-        product.put("discount", 20);
-        product.put("stock", 12);
-        product.put("rating", 4.5);
-        product.put("reviews", 128);
-        product.put("description", "Description du produit " + id);
-        product.put("brand", "Marque X");
-        product.put("color", "Noir");
-        product.put("size", "M");
-        product.put("material", "Composite");
-        product.put("weight", 1.2);
-        product.put("sku", "SKU-" + id);
-        product.put("imageUrl", "/img/sample-product.jpg");
-
-        List<Map<String, Object>> related = new ArrayList<>();
-        for (int i = 1; i <= 3; i++) {
-            Map<String, Object> rel = new HashMap<>();
-            rel.put("id", id + i);
-            rel.put("name", "Produit lié " + (id + i));
-            rel.put("price", 149.0 + i * 10);
-            rel.put("imageUrl", "/img/sample-product.jpg");
-            related.add(rel);
-        }
-
+        try {
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+            ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
+                apiUrl,
+                org.springframework.http.HttpMethod.GET,
+                entity,
+                new ParameterizedTypeReference<Map<String, Object>>() {}
+            );
+            product = response.getBody();
+        } catch (Exception e) {}
         model.addAttribute("product", product);
-        model.addAttribute("relatedProducts", related);
-        model.addAttribute("productId", id);
         return "public/product";
     }
 
     @GetMapping("/cart")
     public String showPublicCart(Model model) {
-        // Initialiser les variables pour le panier public
         List<Object> cartItems = new ArrayList<>();
         model.addAttribute("cartItems", cartItems);
         model.addAttribute("cartEmpty", cartItems.isEmpty());

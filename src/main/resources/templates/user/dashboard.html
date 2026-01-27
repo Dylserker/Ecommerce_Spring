@@ -15,36 +15,16 @@
             <div class="dashboard-section full-width">
                 <h2>Produits phares</h2>
                 <div class="product-grid">
-                    <div class="product-card">
-                        <div class="product-thumb"></div>
-                        <div class="product-info">
-                            <div class="product-title">Produit Phare 1</div>
-                            <div class="product-price">299,00 €</div>
-                            <div class="product-actions">
-                                <a th:href="@{/user/product/6}" class="btn-view">Voir le produit</a>
-                                <button class="btn-add-cart">Ajouter au panier</button>
-                            </div>
+                    <div class="product-card" th:each="product : ${featuredProducts}">
+                        <div class="product-thumb">
+                            <img th:src="${product['imageUrl']}" alt="Produit" style="width:100px;height:100px;object-fit:cover;">
                         </div>
-                    </div>
-                    <div class="product-card">
-                        <div class="product-thumb"></div>
                         <div class="product-info">
-                            <div class="product-title">Produit Phare 2</div>
-                            <div class="product-price">399,00 €</div>
+                            <div class="product-title" th:text="${product['name']}">Nom</div>
+                            <div class="product-price" th:text="'€ ' + ${product['price']}">Prix</div>
                             <div class="product-actions">
-                                <a th:href="@{/user/product/7}" class="btn-view">Voir le produit</a>
-                                <button class="btn-add-cart">Ajouter au panier</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="product-card">
-                        <div class="product-thumb"></div>
-                        <div class="product-info">
-                            <div class="product-title">Produit Phare 3</div>
-                            <div class="product-price">249,00 €</div>
-                            <div class="product-actions">
-                                <a th:href="@{/user/product/8}" class="btn-view">Voir le produit</a>
-                                <button class="btn-add-cart">Ajouter au panier</button>
+                                <a th:href="@{/user/product/{id}(id=${product['id']})}" class="btn-view">Voir le produit</a>
+                                <a th:href="@{/user/cart/add/{id}(id=${product['id']})}" class="btn-add-cart">Ajouter au panier</a>
                             </div>
                         </div>
                     </div>
@@ -54,36 +34,16 @@
             <div class="dashboard-section">
                 <h2>Produits populaires</h2>
                 <div class="product-grid">
-                    <div class="product-card">
-                        <div class="product-thumb"></div>
-                        <div class="product-info">
-                            <div class="product-title">Produit A</div>
-                            <div class="product-price">199,00 €</div>
-                            <div class="product-actions">
-                                <a th:href="@{/user/product/1}" class="btn-view">Voir le produit</a>
-                                <button class="btn-add-cart">Ajouter au panier</button>
-                            </div>
+                    <div class="product-card" th:each="product : ${popularProducts}">
+                        <div class="product-thumb">
+                            <img th:src="${product['imageUrl']}" alt="Produit" style="width:100px;height:100px;object-fit:cover;">
                         </div>
-                    </div>
-                    <div class="product-card">
-                        <div class="product-thumb"></div>
                         <div class="product-info">
-                            <div class="product-title">Produit B</div>
-                            <div class="product-price">89,90 €</div>
+                            <div class="product-title" th:text="${product['name']}">Nom</div>
+                            <div class="product-price" th:text="'€ ' + ${product['price']}">Prix</div>
                             <div class="product-actions">
-                                <a th:href="@{/user/product/2}" class="btn-view">Voir le produit</a>
-                                <button class="btn-add-cart">Ajouter au panier</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="product-card">
-                        <div class="product-thumb"></div>
-                        <div class="product-info">
-                            <div class="product-title">Produit C</div>
-                            <div class="product-price">49,00 €</div>
-                            <div class="product-actions">
-                                <a th:href="@{/user/product/3}" class="btn-view">Voir le produit</a>
-                                <button class="btn-add-cart">Ajouter au panier</button>
+                                <a th:href="@{/user/product/{id}(id=${product['id']})}" class="btn-view">Voir le produit</a>
+                                <a th:href="@{/user/cart/add/{id}(id=${product['id']})}" class="btn-add-cart">Ajouter au panier</a>
                             </div>
                         </div>
                     </div>
@@ -93,25 +53,16 @@
             <div class="dashboard-section">
                 <h2>En promotion</h2>
                 <div class="product-grid">
-                    <div class="product-card">
-                        <div class="product-thumb"></div>
-                        <div class="product-info">
-                            <div class="product-title">Promo X</div>
-                            <div class="product-price">129,00 €</div>
-                            <div class="product-actions">
-                                <a th:href="@{/user/product/4}" class="btn-view">Voir le produit</a>
-                                <button class="btn-add-cart">Ajouter au panier</button>
-                            </div>
+                    <div class="product-card" th:each="product : ${promoProducts}">
+                        <div class="product-thumb">
+                            <img th:src="${product['imageUrl']}" alt="Produit" style="width:100px;height:100px;object-fit:cover;">
                         </div>
-                    </div>
-                    <div class="product-card">
-                        <div class="product-thumb"></div>
                         <div class="product-info">
-                            <div class="product-title">Promo Y</div>
-                            <div class="product-price">59,00 €</div>
+                            <div class="product-title" th:text="${product['name']}">Nom</div>
+                            <div class="product-price" th:text="'€ ' + ${product['price']}">Prix</div>
                             <div class="product-actions">
-                                <a th:href="@{/user/product/5}" class="btn-view">Voir le produit</a>
-                                <button class="btn-add-cart">Ajouter au panier</button>
+                                <a th:href="@{/user/product/{id}(id=${product['id']})}" class="btn-view">Voir le produit</a>
+                                <a th:href="@{/user/cart/add/{id}(id=${product['id']})}" class="btn-add-cart">Ajouter au panier</a>
                             </div>
                         </div>
                     </div>

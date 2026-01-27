@@ -129,7 +129,32 @@ public class UserController {
     }
 
     @GetMapping("/dashboard")
-    public String showUserDashboard() {
+    public String showUserDashboard(Model model, HttpSession session) {
+        RestTemplate restTemplate = new RestTemplate();
+        String apiUrl = "http://localhost:8080/api/product";
+        String promoUrl = "http://localhost:8080/api/product/sale";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        String token = (String) session.getAttribute("jwtToken");
+        if (token != null) {
+            headers.set("Authorization", "Bearer " + token);
+        }
+        List<Object> allProducts = new ArrayList<>();
+        List<Object> promoProducts = new ArrayList<>();
+        try {
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+            ResponseEntity<List> response = restTemplate.exchange(apiUrl, org.springframework.http.HttpMethod.GET, entity, List.class);
+            allProducts = response.getBody();
+        } catch (Exception e) {}
+        try {
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+            ResponseEntity<List> response = restTemplate.exchange(promoUrl, org.springframework.http.HttpMethod.GET, entity, List.class);
+            promoProducts = response.getBody();
+        } catch (Exception e) {}
+        // Sélectionner quelques produits pour chaque section
+        model.addAttribute("featuredProducts", allProducts != null && allProducts.size() > 0 ? allProducts.subList(0, Math.min(3, allProducts.size())) : new ArrayList<>());
+        model.addAttribute("popularProducts", allProducts != null && allProducts.size() > 3 ? allProducts.subList(3, Math.min(6, allProducts.size())) : new ArrayList<>());
+        model.addAttribute("promoProducts", promoProducts != null ? promoProducts : new ArrayList<>());
         return "user/dashboard";
     }
 

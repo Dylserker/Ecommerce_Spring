@@ -4,6 +4,26 @@
     <meta charset="UTF-8">
 </head>
 <body>
+    <!-- Public Navbar -->
+    <nav th:fragment="public-navbar" class="navbar">
+        <div class="navbar-top">
+            <a th:href="@{/}" class="navbar-logo" style="text-decoration: none; color: inherit;">LOGO</a>
+            <div class="navbar-search">
+                <input type="text" placeholder="Rechercher un produit..." class="search-bar">
+            </div>
+            <div class="navbar-actions">
+                <a th:href="@{/cart}" class="navbar-link">🛒 Panier</a>
+                <a th:href="@{/user/login}" class="navbar-link btn-login-nav">Se connecter</a>
+            </div>
+        </div>
+        <div class="navbar-categories">
+            <a th:href="@{/products}" class="category-link">Tous les produits</a>
+            <a th:href="@{/user/products(category='ordinateur')}" class="category-link">Ordinateurs</a>
+            <a th:href="@{/user/products(category='smartphone')}" class="category-link">Smartphones</a>
+            <a th:href="@{/user/products(category='accessoire')}" class="category-link">Accessoires</a>
+        </div>
+    </nav>
+
     <!-- User Navbar -->
     <nav th:fragment="user-navbar" class="navbar">
         <div class="navbar-top">
