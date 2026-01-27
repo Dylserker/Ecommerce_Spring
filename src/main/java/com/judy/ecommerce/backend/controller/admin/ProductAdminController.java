@@ -26,6 +26,11 @@ public class ProductAdminController {
         return ResponseEntity.ok(productService.getAllProducts(true));
     }
 
+    @GetMapping("/sale")
+    public ResponseEntity<List<ProductDTO>> getAllProductsInSale() {
+        return ResponseEntity.ok(productService.getAllProductsInSale(true));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ProductDTO> getProductByIdAdmin(@PathVariable @Min(1) int id) {
         return ResponseEntity.ok(productService.getProductById(id, true));

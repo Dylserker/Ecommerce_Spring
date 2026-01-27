@@ -2,12 +2,15 @@ package com.judy.ecommerce.backend.repository;
 
 import com.judy.ecommerce.backend.entity.Categories;
 import com.judy.ecommerce.backend.entity.Products;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Products, Long> {
+
     // USER //
 
     /// Find product by id, check for disabled
@@ -25,6 +28,9 @@ public interface ProductRepository extends JpaRepository<Products, Long> {
     /// Return a list of products containing the keyword, check for disabled
     List<Products> findAllByNameContainsAndDisabledFalse(String name);
 
+    /// Return a list of products in sale, doesn't check for disabled
+    /// Sorted by highest sale
+    List<Products> findAllBySalePercentGreaterThanAndDisabledFalseOrderBySalePercentDesc(double salePercent);
 
     // ADMIN //
 
@@ -43,4 +49,9 @@ public interface ProductRepository extends JpaRepository<Products, Long> {
     List<Products> findAllByNameContains(String name);
 
     List<Products> findByCategory(Categories category);
+
+    /// Return a list of products in sale, doesn't check for disabled
+    /// Sorted by highest sale
+    @Query("SELECT p FROM Products p WHERE p.price <> p.salePrice ORDER BY p.salePercent DESC")
+    List<Products> findAllBySalePercentGreaterThanOrderBySalePercentDesc(double salePercent);
 }

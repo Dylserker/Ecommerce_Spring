@@ -1,5 +1,6 @@
 package com.judy.ecommerce.backend.controller.user;
 
+import com.judy.ecommerce.backend.dto.order.OrderDTO;
 import com.judy.ecommerce.backend.dto.product.ProductDTO;
 import com.judy.ecommerce.backend.service.CartService;
 import jakarta.validation.constraints.Min;
@@ -50,4 +51,7 @@ public class CartAPIController {
                                                            @PathVariable int id) {
         return ResponseEntity.ok(cartService.removeFromCart(userDetails.getUsername(), id));
     }
+
+//    @PostMapping("/payment")
+//    public ResponseEntity<OrderDTO>
 }

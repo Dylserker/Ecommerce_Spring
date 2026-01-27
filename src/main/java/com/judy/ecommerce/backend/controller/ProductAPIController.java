@@ -24,6 +24,11 @@ public class ProductAPIController {
         return ResponseEntity.ok(productService.getAllProducts(false));
     }
 
+    @GetMapping("/sale")
+    public ResponseEntity<List<ProductDTO>> getAllProductsInSale() {
+        return ResponseEntity.ok(productService.getAllProductsInSale(false));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ProductDTO> getProductById(@PathVariable @Min(1) int id) {
         return ResponseEntity.ok(productService.getProductById(id, false));

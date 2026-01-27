@@ -53,6 +53,20 @@ public class ProductService {
         return productToDTO(product);
     }
 
+    public List<ProductDTO> getAllProductsInSale(boolean admin) {
+        if (admin) {
+            // Get all products in sale, even if disabled
+            return listToDTO(
+                    productRepository.findAllBySalePercentGreaterThanOrderBySalePercentDesc(0)
+            );
+        } else {
+            // Get all products in sale, check for disabled
+            return listToDTO(
+                    productRepository.findAllBySalePercentGreaterThanAndDisabledFalseOrderBySalePercentDesc(0)
+            );
+        }
+    }
+
     public List<ProductDTO> searchProducts(String input, FiltersDTO filters, boolean admin) {
         // Make sure minPrice and maxPrice are correct
         if (filters.minPrice().isPresent()) {
@@ -151,13 +165,16 @@ public class ProductService {
 
     // UTILS //
 
-    private ProductDTO productToDTO(Products product) {
+    // Let this public static, used in CartService
+    public static ProductDTO productToDTO(Products product) {
         return new ProductDTO(
                 product.getId(),
                 product.getName(),
                 product.getDescription(),
                 product.getCategory().getName(),
                 product.getPrice(),
+                product.getSalePrice(),
+                product.getSalePercent(),
                 product.getQuantity(),
                 product.isDisabled()
         );
@@ -185,7 +202,25 @@ public class ProductService {
         targetProduct.setName(productInfos.name());
         targetProduct.setDescription(productInfos.description());
         targetProduct.setCategory(category);
-        targetProduct.setPrice(productInfos.price());
+
+        double price = productInfos.price();
+        double salePrice;
+
+        targetProduct.setPrice(price);
+
+        if (productInfos.salePrice().isPresent()) {
+            salePrice = productInfos.salePrice().get();
+
+            // Readjust sale price if above base price
+            if (salePrice > price) {
+                salePrice = price;
+            }
+        } else {
+            salePrice = productInfos.price();
+        }
+
+        targetProduct.setSalePrice(salePrice);
+        targetProduct.setSalePercent((price - salePrice) * 100 / price);
         targetProduct.setQuantity(productInfos.quantity());
         targetProduct.setDisabled(productInfos.disabled());
 

@@ -36,6 +36,12 @@ public class Products {
     private double price;
 
     @Column(nullable = false)
+    private double salePrice;
+
+    @Column(nullable = false)
+    private double salePercent;
+
+    @Column(nullable = false)
     private int quantity = 0;
 
     @Column(nullable = false)

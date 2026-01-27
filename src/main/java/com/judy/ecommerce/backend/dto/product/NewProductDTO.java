@@ -12,6 +12,7 @@ public record NewProductDTO(
         @NotBlank @Size(max = 5000) String description,
         Optional<Integer> category,
         @NotNull @Min(0) double price,
+        Optional<Double> salePrice,
         @NotNull @Min(0) int quantity,
         @NotNull boolean disabled
 ) {}

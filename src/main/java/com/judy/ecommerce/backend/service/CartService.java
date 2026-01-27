@@ -138,15 +138,7 @@ public class CartService {
 
         for (Carts cartProduct : cart) {
             Products product = cartProduct.getProduct();
-            products.add(new ProductDTO(
-                    product.getId(),
-                    product.getName(),
-                    product.getDescription(),
-                    product.getCategory().getName(),
-                    product.getPrice(),
-                    cartProduct.getQuantity(),
-                    product.isDisabled()
-            ));
+            products.add(ProductService.productToDTO(product));
         }
 
         return products;
