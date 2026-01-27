@@ -18,9 +18,9 @@
         </div>
         <div class="navbar-categories">
             <a th:href="@{/user/products}" class="category-link">Tous les produits</a>
-            <a th:href="@{/user/products(category='ordinateur')}" class="category-link">Ordinateur</a>
-            <a th:href="@{/user/products(category='smartphone')}" class="category-link">smartphone</a>
-            <a th:href="@{/user/products(category='accessoires')}" class="category-link">Accessoires</a>
+            <span th:each="cat : ${categories}">
+                <a th:href="@{/user/products(categoryId=${cat['id']})}" class="category-link" th:text="${cat['name']}"></a>
+            </span>
         </div>
     </nav>
 

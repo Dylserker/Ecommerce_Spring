@@ -28,6 +28,23 @@ import jakarta.servlet.http.HttpSession;
 @RequestMapping("/user")
 @SessionAttributes("jwtToken")
 public class UserController {
+    @GetMapping("/cart/add/{id}")
+    public String addToCart(@PathVariable Long id, HttpSession session) {
+        RestTemplate restTemplate = new RestTemplate();
+        String apiUrl = "http://localhost:8080/api/user/cart/" + id;
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        String token = (String) session.getAttribute("jwtToken");
+        if (token != null) {
+            headers.set("Authorization", "Bearer " + token);
+        }
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+        try {
+            restTemplate.postForEntity(apiUrl, entity, List.class);
+        } catch (Exception e) {
+        }
+        return "redirect:/user/cart";
+    }
 
     @GetMapping("/")
     public String showUserDashboardHome() {
@@ -96,28 +113,45 @@ public class UserController {
 
     @GetMapping("/dashboard")
     public String showUserDashboard() {
-        // Vérifier si le client est authentifié (optionnel)
         return "user/dashboard";
     }
 
     @GetMapping("/products")
-    public String showProducts(Model model, HttpSession session) {
+    public String showProducts(@RequestParam(value = "categoryId", required = false) Integer categoryId, Model model, HttpSession session) {
         RestTemplate restTemplate = new RestTemplate();
         String apiUrl = "http://localhost:8080/api/product";
+        String categoriesUrl = "http://localhost:8080/api/category";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         String token = (String) session.getAttribute("jwtToken");
         if (token != null) {
             headers.set("Authorization", "Bearer " + token);
         }
-        HttpEntity<Void> entity = new HttpEntity<>(headers);
         try {
-            ResponseEntity<List> response = restTemplate.exchange(apiUrl, org.springframework.http.HttpMethod.GET, entity, List.class);
-            model.addAttribute("products", response.getBody());
+            ResponseEntity<List> catResponse = restTemplate.exchange(categoriesUrl, org.springframework.http.HttpMethod.GET, new HttpEntity<>(headers), List.class);
+            model.addAttribute("categories", catResponse.getBody());
         } catch (Exception e) {
-            model.addAttribute("products", new ArrayList<>());
+            model.addAttribute("categories", new ArrayList<>());
+        }
+        List products = new ArrayList<>();
+        try {
+            if (categoryId != null) {
+                String searchUrl = "http://localhost:8080/api/product/search/";
+                Map<String, Object> filters = new HashMap<>();
+                filters.put("categoryId", categoryId);
+                HttpEntity<Map<String, Object>> entity = new HttpEntity<>(filters, headers);
+                ResponseEntity<List> response = restTemplate.postForEntity(searchUrl, entity, List.class);
+                products = response.getBody();
+            } else {
+                HttpEntity<Void> entity = new HttpEntity<>(headers);
+                ResponseEntity<List> response = restTemplate.exchange(apiUrl, org.springframework.http.HttpMethod.GET, entity, List.class);
+                products = response.getBody();
+            }
+        } catch (Exception e) {
             model.addAttribute("error", true);
         }
+        model.addAttribute("products", products);
+        model.addAttribute("selectedCategoryId", categoryId);
         return "user/product_list";
     }
 
@@ -143,14 +177,80 @@ public class UserController {
     }
 
     @GetMapping("/cart")
-    public String showCart(Model model) {
-        // Initialiser les variables pour le panier
+    public String showCart(Model model, HttpSession session) {
+        RestTemplate restTemplate = new RestTemplate();
+        String apiUrl = "http://localhost:8080/api/user/cart";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        String token = (String) session.getAttribute("jwtToken");
+        if (token != null) {
+            headers.set("Authorization", "Bearer " + token);
+        }
         List<Object> cartItems = new ArrayList<>();
+        try {
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+            ResponseEntity<List> response = restTemplate.exchange(apiUrl, org.springframework.http.HttpMethod.GET, entity, List.class);
+            cartItems = response.getBody();
+        } catch (Exception e) {
+        }
         model.addAttribute("cartItems", cartItems);
-        model.addAttribute("cartEmpty", cartItems.isEmpty());
-        model.addAttribute("subtotal", 0.0);
-        model.addAttribute("tax", 0.0);
-        model.addAttribute("total", 0.0);
+        model.addAttribute("cartEmpty", cartItems == null || cartItems.isEmpty());
+
+        // Calcul du sous-total, taxe et total (robuste pour produit simple ou {product, quantity})
+        double subtotal = 0.0;
+        double tax = 0.0;
+        double total = 0.0;
+        double taxRate = 0.20; // 20% TVA
+
+        if (cartItems != null) {
+            for (Object obj : cartItems) {
+                if (obj instanceof Map) {
+                    Map item = (Map) obj;
+                    double price = 0.0;
+                    int quantity = 1;
+                    // Cas 1 : produit simple (item['price'])
+                    if (item.containsKey("price")) {
+                        Object priceObj = item.get("price");
+                        if (priceObj instanceof Number) {
+                            price = ((Number) priceObj).doubleValue();
+                        } else if (priceObj != null) {
+                            try { price = Double.parseDouble(priceObj.toString()); } catch (Exception ignore) {}
+                        }
+                        Object qtyObj = item.get("quantity");
+                        if (qtyObj instanceof Number) {
+                            quantity = ((Number) qtyObj).intValue();
+                        } else if (qtyObj != null) {
+                            try { quantity = Integer.parseInt(qtyObj.toString()); } catch (Exception ignore) {}
+                        }
+                    }
+                    // Cas 2 : objet {product, quantity}
+                    else if (item.containsKey("product")) {
+                        Object productObj = item.get("product");
+                        if (productObj instanceof Map) {
+                            Map product = (Map) productObj;
+                            Object priceObj = product.get("price");
+                            if (priceObj instanceof Number) {
+                                price = ((Number) priceObj).doubleValue();
+                            } else if (priceObj != null) {
+                                try { price = Double.parseDouble(priceObj.toString()); } catch (Exception ignore) {}
+                            }
+                        }
+                        Object qtyObj = item.get("quantity");
+                        if (qtyObj instanceof Number) {
+                            quantity = ((Number) qtyObj).intValue();
+                        } else if (qtyObj != null) {
+                            try { quantity = Integer.parseInt(qtyObj.toString()); } catch (Exception ignore) {}
+                        }
+                    }
+                    subtotal += price * quantity;
+                }
+            }
+        }
+        tax = subtotal * taxRate;
+        total = subtotal + tax;
+        model.addAttribute("subtotal", subtotal);
+        model.addAttribute("tax", tax);
+        model.addAttribute("total", total);
         return "user/panier";
     }
 
@@ -160,7 +260,23 @@ public class UserController {
     }
 
     @GetMapping("/profile")
-    public String showProfile() {
+    public String showProfile(Model model, HttpSession session) {
+        RestTemplate restTemplate = new RestTemplate();
+        String apiUrl = "http://localhost:8080/api/user/me";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        String token = (String) session.getAttribute("jwtToken");
+        if (token != null) {
+            headers.set("Authorization", "Bearer " + token);
+        }
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+        try {
+            ResponseEntity<Map> response = restTemplate.exchange(apiUrl, org.springframework.http.HttpMethod.GET, entity, Map.class);
+            model.addAttribute("user", response.getBody());
+        } catch (Exception e) {
+            model.addAttribute("user", null);
+            model.addAttribute("error", true);
+        }
         return "user/profile";
     }
 

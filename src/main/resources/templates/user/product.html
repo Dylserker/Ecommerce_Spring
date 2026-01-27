@@ -60,9 +60,9 @@
                             <button id="increaseQty" class="qty-btn">+</button>
                         </div>
                     </div>
-                    <button class="btn-primary btn-lg" th:onclick="'addToCart(' + ${product['id']} + ')'" th:disabled="${product['stock'] == 0}">
+                    <a th:href="@{/user/cart/add/{id}(id=${product['id']})}" class="btn-primary btn-lg" th:classappend="${product['stock'] == 0} ? 'disabled'" th:attr="aria-disabled=${product['stock'] == 0}">
                         <span th:text="${product['stock'] > 0 ? 'Ajouter au panier' : 'Indisponible'}"></span>
-                    </button>
+                    </a>
                     <button class="btn-secondary btn-lg" id="wishlistBtn">
                         <span id="wishlistText">❤ Ajouter à ma liste</span>
                     </button>

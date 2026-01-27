@@ -29,23 +29,23 @@
                     <tbody>
                         <tr th:each="item : ${cartItems}" class="cart-item">
                             <td class="product-info">
-                                <img th:src="${item.product.imageUrl}" alt="Produit" class="cart-item-img">
+                                <img th:src="${item['imageUrl']}" alt="Produit" class="cart-item-img">
                                 <div>
-                                    <strong th:text="${item.product.name}">Nom du produit</strong>
-                                    <p class="product-sku" th:text="'SKU: ' + ${item.product.sku}">SKU</p>
+                                    <strong th:text="${item['name']}">Nom du produit</strong>
+                                    <p class="product-sku" th:text="'SKU: ' + ${item['sku']}">SKU</p>
                                 </div>
                             </td>
-                            <td class="price" th:text="'€ ' + ${item.product.price}">Prix</td>
+                            <td class="price" th:text="'€ ' + ${item['price']}">Prix</td>
                             <td class="quantity">
                                 <div class="qty-controls">
-                                    <button class="qty-btn" th:onclick="'updateQuantity(' + ${item.product.id} + ', -1)'" data-product-id="1">−</button>
-                                    <input type="number" th:value="${item.quantity}" th:data-product-id="${item.product.id}" min="1" class="qty-input">
-                                    <button class="qty-btn" th:onclick="'updateQuantity(' + ${item.product.id} + ', 1)'" data-product-id="1">+</button>
+                                    <button class="qty-btn" th:onclick="'updateQuantity(' + ${item['id']} + ', -1)'" th:data-product-id="${item['id']}">−</button>
+                                    <input type="number" th:value="1" th:data-product-id="${item['id']}" min="1" class="qty-input">
+                                    <button class="qty-btn" th:onclick="'updateQuantity(' + ${item['id']} + ', 1)'" th:data-product-id="${item['id']}">+</button>
                                 </div>
                             </td>
-                            <td class="subtotal" th:text="'€ ' + ${item.quantity * item.product.price}">Sous-total</td>
+                            <td class="subtotal" th:text="'€ ' + ${item['price']}">Sous-total</td>
                             <td class="action">
-                                <button class="btn-delete" th:onclick="'removeFromCart(' + ${item.product.id} + ')'" title="Supprimer du panier">🗑 Supprimer</button>
+                                <button class="btn-delete" th:onclick="'removeFromCart(' + ${item['id']} + ')'" title="Supprimer du panier">🗑 Supprimer</button>
                             </td>
                         </tr>
                     </tbody>

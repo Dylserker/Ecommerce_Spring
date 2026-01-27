@@ -46,7 +46,7 @@
                         <div class="product-item-price" th:text="'€ ' + ${product.price}">Prix</div>
                         <div class="product-item-actions">
                             <a th:href="@{/user/product/{id}(id=${product.id})}" class="btn-secondary" style="text-decoration: none;">Voir</a>
-                            <button class="btn-primary">Panier</button>
+                            <a th:href="@{/user/cart/add/{id}(id=${product.id})}" class="btn-primary" style="text-decoration: none;">Panier</a>
                         </div>
                     </div>
                 </div>

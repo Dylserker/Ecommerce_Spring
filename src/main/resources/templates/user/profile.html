@@ -14,8 +14,8 @@
                 <div class="profile-container">
                     <div class="profile-sidebar">
                         <div class="profile-pic">Photo</div>
-                        <div class="profile-title">M / Mme</div>
-                        <div class="profile-name">Nom et prénom</div>
+                        <div class="profile-title" th:text="${user != null ? user['role'] : 'Utilisateur'}">M / Mme</div>
+                        <div class="profile-name" th:text="${user != null ? user['firstName'] + ' ' + user['lastName'] : 'Nom et prénom'}">Nom et prénom</div>
                         <a th:href="@{/}" class="btn-secondary" style="text-decoration: none; display: block; text-align: center;">Déconnecter</a>
                     </div>
 
@@ -32,19 +32,19 @@
                                     <div class="profile-info">
                                         <div class="info-group">
                                             <div class="info-label">Prénom</div>
-                                            <input class="info-value" name="firstName" value="Prénom" readonly>
+                                            <input class="info-value" name="firstName" th:value="${user != null ? user['firstName'] : ''}" readonly>
                                         </div>
                                         <div class="info-group">
                                             <div class="info-label">Nom</div>
-                                            <input class="info-value" name="lastName" value="Nom" readonly>
+                                            <input class="info-value" name="lastName" th:value="${user != null ? user['lastName'] : ''}" readonly>
                                         </div>
                                         <div class="info-group">
                                             <div class="info-label">Email</div>
-                                            <input class="info-value" name="email" type="email" placeholder="email@example.com" value="email@example.com" readonly>
+                                            <input class="info-value" name="email" type="email" placeholder="email@example.com" th:value="${user != null ? user['email'] : ''}" readonly>
                                         </div>
                                         <div class="info-group">
                                             <div class="info-label">Date de naissance</div>
-                                            <input class="info-value" name="birthDate" type="date" value="1990-01-01" readonly>
+                                            <input class="info-value" name="birthDate" type="date" value="" readonly>
                                         </div>
                                     </div>
                                     <div class="profile-actions" style="margin-top: 10px; gap: 10px;">
