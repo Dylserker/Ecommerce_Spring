@@ -22,8 +22,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/")
 public class PublicController {
 
+    private void addCategoriesToModel(Model model) {
+        RestTemplate restTemplate = new RestTemplate();
+        String categoriesUrl = "http://localhost:8080/api/category";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        try {
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+            ResponseEntity<List> catResponse = restTemplate.exchange(categoriesUrl, org.springframework.http.HttpMethod.GET, entity, List.class);
+            model.addAttribute("categories", catResponse.getBody());
+        } catch (Exception e) {
+            model.addAttribute("categories", new ArrayList<>());
+        }
+    }
+
     @GetMapping("/dashboard")
     public String showPublicDashboard(Model model) {
+        addCategoriesToModel(model);
         RestTemplate restTemplate = new RestTemplate();
         String apiUrl = "http://localhost:8080/api/product";
         String promoUrl = "http://localhost:8080/api/product/sale";
@@ -58,12 +73,44 @@ public class PublicController {
     }
 
     @GetMapping
-    public String showHomePage() {
+    public String showHomePage(Model model) {
+        addCategoriesToModel(model);
+        RestTemplate restTemplate = new RestTemplate();
+        String apiUrl = "http://localhost:8080/api/product";
+        String promoUrl = "http://localhost:8080/api/product/sale";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        List<Map<String, Object>> allProducts = new ArrayList<>();
+        List<Map<String, Object>> promoProducts = new ArrayList<>();
+        try {
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+            ResponseEntity<List<Map<String, Object>>> response = restTemplate.exchange(
+                apiUrl,
+                org.springframework.http.HttpMethod.GET,
+                entity,
+                new ParameterizedTypeReference<List<Map<String, Object>>>() {}
+            );
+            allProducts = response.getBody();
+        } catch (Exception e) {}
+        try {
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+            ResponseEntity<List<Map<String, Object>>> response = restTemplate.exchange(
+                promoUrl,
+                org.springframework.http.HttpMethod.GET,
+                entity,
+                new ParameterizedTypeReference<List<Map<String, Object>>>() {}
+            );
+            promoProducts = response.getBody();
+        } catch (Exception e) {}
+        model.addAttribute("featuredProducts", allProducts != null && allProducts.size() > 0 ? allProducts.subList(0, Math.min(3, allProducts.size())) : new ArrayList<>());
+        model.addAttribute("popularProducts", allProducts != null && allProducts.size() > 3 ? allProducts.subList(3, Math.min(6, allProducts.size())) : new ArrayList<>());
+        model.addAttribute("promoProducts", promoProducts != null ? promoProducts : new ArrayList<>());
         return "index";
     }
 
     @GetMapping("/products")
     public String showPublicProducts(Model model) {
+        addCategoriesToModel(model);
         RestTemplate restTemplate = new RestTemplate();
         String apiUrl = "http://localhost:8080/api/product";
         HttpHeaders headers = new HttpHeaders();
@@ -85,6 +132,7 @@ public class PublicController {
 
     @GetMapping("/product/{id}")
     public String showPublicProductDetail(@PathVariable Long id, Model model) {
+        addCategoriesToModel(model);
         RestTemplate restTemplate = new RestTemplate();
         String apiUrl = "http://localhost:8080/api/product/" + id;
         HttpHeaders headers = new HttpHeaders();
@@ -106,6 +154,7 @@ public class PublicController {
 
     @GetMapping("/cart")
     public String showPublicCart(Model model) {
+        addCategoriesToModel(model);
         List<Object> cartItems = new ArrayList<>();
         model.addAttribute("cartItems", cartItems);
         model.addAttribute("cartEmpty", cartItems.isEmpty());

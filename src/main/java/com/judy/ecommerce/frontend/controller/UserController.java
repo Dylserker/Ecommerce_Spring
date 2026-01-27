@@ -95,7 +95,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/register")
+    @GetMapping("/register")    
     public String showRegister() {
         return "user/register";
     }

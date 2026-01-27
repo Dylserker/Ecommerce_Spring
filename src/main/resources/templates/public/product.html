@@ -15,11 +15,11 @@
 
         <div class="product-detail">
             <div class="product-image-section">
-                <img id="mainProductImage" th:src="${product.imageUrl}" alt="Produit" class="product-main-image">
+                <img id="mainProductImage" th:src="${product['imageUrl']}" alt="Produit" class="product-main-image">
                 <div class="product-thumbnails">
-                    <img th:src="${product.imageUrl}" alt="Miniature 1" class="thumbnail" id="thumb1">
-                    <img th:src="${product.imageUrl}" alt="Miniature 2" class="thumbnail" id="thumb2">
-                    <img th:src="${product.imageUrl}" alt="Miniature 3" class="thumbnail" id="thumb3">
+                    <img th:src="${product['imageUrl']}" alt="Miniature 1" class="thumbnail" id="thumb1">
+                    <img th:src="${product['imageUrl']}" alt="Miniature 2" class="thumbnail" id="thumb2">
+                    <img th:src="${product['imageUrl']}" alt="Miniature 3" class="thumbnail" id="thumb3">
                 </div>
             </div>
 
@@ -27,27 +27,27 @@
 
             <div class="product-info-section">
                 <div class="breadcrumb">
-                    <a th:href="@{/products}">Accueil</a> / <span th:text="${product.category}">Catégorie</span> / <span th:text="${product.name}">Produit</span>
+                    <a th:href="@{/products}">Accueil</a> / <span th:text="${product['category']}">Catégorie</span> / <span th:text="${product['name']}">Produit</span>
                 </div>
 
-                <h1 th:text="${product.name}">Nom du produit</h1>
+                <h1 th:text="${product['name']}">Nom du produit</h1>
 
                 <div class="rating-section" th:if="${product != null}">
-                    <span class="stars" th:text="'★★★★★ ' + ${product.rating}"></span>
-                    <span class="review-count" th:text="'(' + ${product.reviews} + ' avis)'"></span>
+                    <span class="stars" th:text="'★★★★★ ' + ${product['rating']}"></span>
+                    <span class="review-count" th:text="'(' + ${product['reviews']} + ' avis)'"></span>
                 </div>
 
                 <div class="price-section">
                     <div class="price-display">
-                        <span class="current-price" th:text="'€ ' + ${product.price}">€ 0,00</span>
-                        <span class="original-price" th:if="${product.discount > 0}" th:text="'€ ' + ${product.originalPrice}"></span>
-                        <span class="discount-badge" th:if="${product.discount > 0}" th:text="'Économisez ' + ${product.discount} + '%'"></span>
+                        <span class="current-price" th:text="'€ ' + ${product['price']}">€ 0,00</span>
+                        <span class="original-price" th:if="${product['discount'] > 0}" th:text="'€ ' + ${product['originalPrice']}"></span>
+                        <span class="discount-badge" th:if="${product['discount'] > 0}" th:text="'Économisez ' + ${product['discount']} + '%'" ></span>
                     </div>
-                    <div class="stock-status" th:classappend="${product.stock > 0 ? 'in-stock' : 'out-of-stock'}">
-                        <span th:if="${product.stock > 0}">
-                            <strong>✓ En stock</strong> - <span th:text="${product.stock} + ' articles disponibles'"></span>
+                    <div class="stock-status" th:classappend="${product['stock'] > 0 ? 'in-stock' : 'out-of-stock'}">
+                        <span th:if="${product['stock'] > 0}">
+                            <strong>✓ En stock</strong> - <span th:text="${product['stock']} + ' articles disponibles'"></span>
                         </span>
-                        <span th:if="${product.stock == 0}">
+                        <span th:if="${product['stock'] == 0}">
                             <strong>✗ Rupture de stock</strong>
                         </span>
                     </div>
@@ -64,7 +64,7 @@
 
                 <div class="product-descriptif">
                     <h3>Description</h3>
-                    <p th:text="${product.description}">Description détaillée du produit. Toutes les informations importantes sur les caractéristiques et les avantages.</p>
+                    <p th:text="${product['description']}">Description détaillée du produit. Toutes les informations importantes sur les caractéristiques et les avantages.</p>
                 </div>
             </div>
         </div>

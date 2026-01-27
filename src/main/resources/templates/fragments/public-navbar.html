@@ -14,9 +14,12 @@
         </div>
         <div class="navbar-categories">
             <a th:href="@{/products}" class="category-link">Tous les produits</a>
-            <a th:href="@{/user/products(category='ordinateur')}" class="category-link">Ordinateurs</a>
-            <a th:href="@{/user/products(category='smartphone')}" class="category-link">Smartphones</a>
-            <a th:href="@{/user/products(category='accessoire')}" class="category-link">Accessoires</a>
+            <span th:each="cat : ${categories}">
+                <a th:href="@{/products(categoryId=${cat['id']})}"
+                   class="category-link"
+                   th:text="${cat['name']}"
+                   th:classappend="${selectedCategoryId} == ${cat['id']} ? ' active' : ''"></a>
+            </span>
         </div>
     </nav>
 </body>

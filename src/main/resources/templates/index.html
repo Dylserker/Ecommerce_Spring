@@ -17,13 +17,14 @@
                 <div class="product-grid">
                     <div class="product-card" th:each="product : ${featuredProducts}">
                         <div class="product-thumb">
-                            <img th:src="@{/img/default-product.png}" alt="Produit" style="width:100px;height:100px;object-fit:cover;">
+                            <img th:src="${product['imageUrl']}" alt="Produit" style="width:100px;height:100px;object-fit:cover;">
                         </div>
                         <div class="product-info">
                             <div class="product-title" th:text="${product['name']}">Nom</div>
                             <div class="product-price" th:text="'€ ' + ${product['price']}">Prix</div>
                             <div class="product-actions">
                                 <a th:href="@{/product/{id}(id=${product['id']})}" class="btn-view">Voir le produit</a>
+                                <a th:href="@{/user/login}" class="btn-add-cart">Ajouter au panier</a>
                             </div>
                             <div class="notice">Connexion requise pour acheter</div>
                         </div>
@@ -36,13 +37,14 @@
                 <div class="product-grid">
                     <div class="product-card" th:each="product : ${popularProducts}">
                         <div class="product-thumb">
-                            <img th:src="@{/img/default-product.png}" alt="Produit" style="width:100px;height:100px;object-fit:cover;">
+                            <img th:src="${product['imageUrl']}" alt="Produit" style="width:100px;height:100px;object-fit:cover;">
                         </div>
                         <div class="product-info">
                             <div class="product-title" th:text="${product['name']}">Nom</div>
                             <div class="product-price" th:text="'€ ' + ${product['price']}">Prix</div>
                             <div class="product-actions">
                                 <a th:href="@{/product/{id}(id=${product['id']})}" class="btn-view">Voir le produit</a>
+                                <a th:href="@{/login}" class="btn-add-cart">Ajouter au panier</a>
                             </div>
                             <div class="notice">Connexion requise pour acheter</div>
                         </div>
@@ -55,13 +57,14 @@
                 <div class="product-grid">
                     <div class="product-card" th:each="product : ${promoProducts}">
                         <div class="product-thumb">
-                            <img th:src="@{/img/default-product.png}" alt="Produit" style="width:100px;height:100px;object-fit:cover;">
+                            <img th:src="${product['imageUrl']}" alt="Produit" style="width:100px;height:100px;object-fit:cover;">
                         </div>
                         <div class="product-info">
                             <div class="product-title" th:text="${product['name']}">Nom</div>
                             <div class="product-price" th:text="'€ ' + ${product['price']}">Prix</div>
                             <div class="product-actions">
                                 <a th:href="@{/product/{id}(id=${product['id']})}" class="btn-view">Voir le produit</a>
+                                <a th:href="@{/login}" class="btn-add-cart">Ajouter au panier</a>
                             </div>
                             <div class="notice">Connexion requise pour acheter</div>
                         </div>
