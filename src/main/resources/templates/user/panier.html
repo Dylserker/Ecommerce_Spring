@@ -45,7 +45,7 @@
                             </td>
                             <td class="subtotal" th:text="'€ ' + ${item['price']}">Sous-total</td>
                             <td class="action">
-                                <button class="btn-delete" th:onclick="'removeFromCart(' + ${item['id']} + ')'" title="Supprimer du panier">🗑 Supprimer</button>
+                                <a th:href="@{/user/cart/remove/{id}(id=${item['id']})}" class="btn-delete" title="Supprimer du panier">🗑 Supprimer</a>
                             </td>
                         </tr>
                     </tbody>

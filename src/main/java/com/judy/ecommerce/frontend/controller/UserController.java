@@ -28,6 +28,23 @@ import jakarta.servlet.http.HttpSession;
 @RequestMapping("/user")
 @SessionAttributes("jwtToken")
 public class UserController {
+        // Supprimer un produit du panier
+        @GetMapping("/cart/remove/{id}")
+        public String removeFromCart(@PathVariable Long id, HttpSession session) {
+            RestTemplate restTemplate = new RestTemplate();
+            String apiUrl = "http://localhost:8080/api/user/cart/" + id;
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            String token = (String) session.getAttribute("jwtToken");
+            if (token != null) {
+                headers.set("Authorization", "Bearer " + token);
+            }
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+            try {
+                restTemplate.exchange(apiUrl, org.springframework.http.HttpMethod.DELETE, entity, Void.class);
+            } catch (Exception e) {}
+            return "redirect:/user/cart";
+        }
     @GetMapping("/cart/add/{id}")
     public String addToCart(@PathVariable Long id, HttpSession session) {
         RestTemplate restTemplate = new RestTemplate();
@@ -195,12 +212,11 @@ public class UserController {
         }
         model.addAttribute("cartItems", cartItems);
         model.addAttribute("cartEmpty", cartItems == null || cartItems.isEmpty());
-
-        // Calcul du sous-total, taxe et total (robuste pour produit simple ou {product, quantity})
+        
         double subtotal = 0.0;
         double tax = 0.0;
         double total = 0.0;
-        double taxRate = 0.20; // 20% TVA
+        double taxRate = 0.20;
 
         if (cartItems != null) {
             for (Object obj : cartItems) {
@@ -208,7 +224,6 @@ public class UserController {
                     Map item = (Map) obj;
                     double price = 0.0;
                     int quantity = 1;
-                    // Cas 1 : produit simple (item['price'])
                     if (item.containsKey("price")) {
                         Object priceObj = item.get("price");
                         if (priceObj instanceof Number) {
@@ -223,7 +238,6 @@ public class UserController {
                             try { quantity = Integer.parseInt(qtyObj.toString()); } catch (Exception ignore) {}
                         }
                     }
-                    // Cas 2 : objet {product, quantity}
                     else if (item.containsKey("product")) {
                         Object productObj = item.get("product");
                         if (productObj instanceof Map) {
