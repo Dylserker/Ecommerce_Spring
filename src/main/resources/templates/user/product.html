@@ -15,37 +15,37 @@
 
         <div class="product-detail">
             <div class="product-image-section">
-                <img th:src="${product.imageUrl}" alt="Produit" class="product-main-image">
+                <img th:src="${product['imageUrl']}" alt="Produit" class="product-main-image">
                 <div class="product-thumbnails">
-                    <img th:src="${product.imageUrl}" alt="Miniature 1" class="thumbnail">
-                    <img th:src="${product.imageUrl}" alt="Miniature 2" class="thumbnail">
-                    <img th:src="${product.imageUrl}" alt="Miniature 3" class="thumbnail">
+                    <img th:src="${product['imageUrl']}" alt="Miniature 1" class="thumbnail">
+                    <img th:src="${product['imageUrl']}" alt="Miniature 2" class="thumbnail">
+                    <img th:src="${product['imageUrl']}" alt="Miniature 3" class="thumbnail">
                 </div>
             </div>
 
             <div class="product-info-section">
                 <div class="breadcrumb">
-                    <a th:href="@{/user/products}">Accueil</a> / <span th:text="${product.category}">Catégorie</span> / <span th:text="${product.name}">Produit</span>
+                    <a th:href="@{/user/products}">Accueil</a> / <span th:text="${product['category']}">Catégorie</span> / <span th:text="${product['name']}">Produit</span>
                 </div>
 
-                <h1 th:text="${product.name}">Nom du Produit</h1>
+                <h1 th:text="${product['name']}">Nom du Produit</h1>
 
                 <div class="rating-section">
-                    <span class="stars" th:text="'★★★★★ ' + ${product.rating}"></span>
-                    <span class="review-count" th:text="'(' + ${product.reviews} + ' avis)'"></span>
+                    <span class="stars" th:text="'★★★★★ ' + ${product['rating']}"></span>
+                    <span class="review-count" th:text="'(' + ${product['reviews']} + ' avis)'"></span>
                 </div>
 
                 <div class="price-section">
                     <div class="price-display">
-                        <span class="current-price" th:text="'€ ' + ${product.price}">Prix</span>
-                        <span class="original-price" th:if="${product.discount > 0}" th:text="'€ ' + ${product.originalPrice}"></span>
-                        <span class="discount-badge" th:if="${product.discount > 0}" th:text="'Économisez ' + ${product.discount} + '%'"></span>
+                        <span class="current-price" th:text="'€ ' + ${product['price']}">Prix</span>
+                        <span class="original-price" th:if="${product['discount'] > 0}" th:text="'€ ' + ${product['originalPrice']}"></span>
+                        <span class="discount-badge" th:if="${product['discount'] > 0}" th:text="'Économisez ' + ${product['discount']} + '%'" ></span>
                     </div>
-                    <div class="stock-status" th:classappend="${product.stock > 0 ? 'in-stock' : 'out-of-stock'}">
-                        <span th:if="${product.stock > 0}">
-                            <strong>✓ En stock</strong> - <span th:text="${product.stock} + ' articles disponibles'"></span>
+                    <div class="stock-status" th:classappend="${product['stock'] > 0 ? 'in-stock' : 'out-of-stock'}">
+                        <span th:if="${product['stock'] > 0}">
+                            <strong>✓ En stock</strong> - <span th:text="${product['stock']} + ' articles disponibles'"></span>
                         </span>
-                        <span th:if="${product.stock == 0}">
+                        <span th:if="${product['stock'] == 0}">
                             <strong>✗ Rupture de stock</strong>
                         </span>
                     </div>
@@ -56,12 +56,12 @@
                         <label for="qty">Quantité:</label>
                         <div class="qty-controls">
                             <button id="decreaseQty" class="qty-btn">−</button>
-                            <input type="number" id="qty" name="quantity" value="1" min="1" th:max="${product.stock}" class="qty-input">
+                            <input type="number" id="qty" name="quantity" value="1" min="1" th:max="${product['stock']}" class="qty-input">
                             <button id="increaseQty" class="qty-btn">+</button>
                         </div>
                     </div>
-                    <button class="btn-primary btn-lg" th:onclick="'addToCart(' + ${product.id} + ')'" th:disabled="${product.stock == 0}">
-                        <span th:text="${product.stock > 0 ? 'Ajouter au panier' : 'Indisponible'}"></span>
+                    <button class="btn-primary btn-lg" th:onclick="'addToCart(' + ${product['id']} + ')'" th:disabled="${product['stock'] == 0}">
+                        <span th:text="${product['stock'] > 0 ? 'Ajouter au panier' : 'Indisponible'}"></span>
                     </button>
                     <button class="btn-secondary btn-lg" id="wishlistBtn">
                         <span id="wishlistText">❤ Ajouter à ma liste</span>
@@ -70,7 +70,7 @@
 
                 <div class="product-descriptif">
                     <h3>Description</h3>
-                    <p th:text="${product.description}">Description détaillée du produit.</p>
+                    <p th:text="${product['description']}">Description détaillée du produit.</p>
                 </div>
             </div>
         </div>

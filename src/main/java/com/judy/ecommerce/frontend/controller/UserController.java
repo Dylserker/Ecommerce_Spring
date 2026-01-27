@@ -41,7 +41,6 @@ public class UserController {
 
     @PostMapping("/login")
     public String userLogin(@RequestParam String email, @RequestParam String password, Model model, HttpSession session) {
-        // Appel à l'API backend pour login
         RestTemplate restTemplate = new RestTemplate();
         String apiUrl = "http://localhost:8080/api/auth/login";
         Map<String, String> loginRequest = new HashMap<>();
@@ -64,7 +63,6 @@ public class UserController {
 
     @GetMapping("/register")
     public String showRegister() {
-        // Créer la page d'inscription
         return "user/register";
     }
 
@@ -103,44 +101,44 @@ public class UserController {
     }
 
     @GetMapping("/products")
-    public String showProducts() {
+    public String showProducts(Model model, HttpSession session) {
+        RestTemplate restTemplate = new RestTemplate();
+        String apiUrl = "http://localhost:8080/api/product";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        String token = (String) session.getAttribute("jwtToken");
+        if (token != null) {
+            headers.set("Authorization", "Bearer " + token);
+        }
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+        try {
+            ResponseEntity<List> response = restTemplate.exchange(apiUrl, org.springframework.http.HttpMethod.GET, entity, List.class);
+            model.addAttribute("products", response.getBody());
+        } catch (Exception e) {
+            model.addAttribute("products", new ArrayList<>());
+            model.addAttribute("error", true);
+        }
         return "user/product_list";
     }
 
     @GetMapping("/product/{id}")
-    public String showProductDetail(@PathVariable Long id, Model model) {
-        // Charger le produit depuis la base de données en attendant la vrai DB
-        Map<String, Object> product = new HashMap<>();
-        product.put("id", id);
-        product.put("name", "Produit " + id);
-        product.put("category", "Catégorie");
-        product.put("price", 199.0);
-        product.put("originalPrice", 249.0);
-        product.put("discount", 20);
-        product.put("stock", 12);
-        product.put("rating", 4.5);
-        product.put("reviews", 128);
-        product.put("description", "Description du produit " + id);
-        product.put("brand", "Marque X");
-        product.put("color", "Noir");
-        product.put("size", "M");
-        product.put("material", "Composite");
-        product.put("weight", 1.2);
-        product.put("sku", "SKU-" + id);
-        product.put("imageUrl", "/img/sample-product.jpg");
-
-        List<Map<String, Object>> related = new ArrayList<>();
-        for (int i = 1; i <= 3; i++) {
-            Map<String, Object> rel = new HashMap<>();
-            rel.put("id", id + i);
-            rel.put("name", "Produit lié " + (id + i));
-            rel.put("price", 149.0 + i * 10);
-            rel.put("imageUrl", "/img/sample-product.jpg");
-            related.add(rel);
+    public String showProductDetail(@PathVariable Long id, Model model, HttpSession session) {
+        RestTemplate restTemplate = new RestTemplate();
+        String apiUrl = "http://localhost:8080/api/product/" + id;
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        String token = (String) session.getAttribute("jwtToken");
+        if (token != null) {
+            headers.set("Authorization", "Bearer " + token);
         }
-
-        model.addAttribute("product", product);
-        model.addAttribute("relatedProducts", related);
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+        try {
+            ResponseEntity<Map> response = restTemplate.exchange(apiUrl, org.springframework.http.HttpMethod.GET, entity, Map.class);
+            model.addAttribute("product", response.getBody());
+        } catch (Exception e) {
+            model.addAttribute("product", null);
+            model.addAttribute("error", true);
+        }
         return "user/product";
     }
 
