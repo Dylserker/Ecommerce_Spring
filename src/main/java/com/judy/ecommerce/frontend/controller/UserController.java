@@ -151,7 +151,6 @@ public class UserController {
             ResponseEntity<List> response = restTemplate.exchange(promoUrl, org.springframework.http.HttpMethod.GET, entity, List.class);
             promoProducts = response.getBody();
         } catch (Exception e) {}
-        // Sélectionner quelques produits pour chaque section
         model.addAttribute("featuredProducts", allProducts != null && allProducts.size() > 0 ? allProducts.subList(0, Math.min(3, allProducts.size())) : new ArrayList<>());
         model.addAttribute("popularProducts", allProducts != null && allProducts.size() > 3 ? allProducts.subList(3, Math.min(6, allProducts.size())) : new ArrayList<>());
         model.addAttribute("promoProducts", promoProducts != null ? promoProducts : new ArrayList<>());
