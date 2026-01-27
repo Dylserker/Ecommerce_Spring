@@ -12,5 +12,6 @@ public record OrderDTO(
     String deliveryLastName,
     String deliveryFirstName,
     String deliveryAddress,
+    String status,
     LocalDateTime orderedAt
 ) {}

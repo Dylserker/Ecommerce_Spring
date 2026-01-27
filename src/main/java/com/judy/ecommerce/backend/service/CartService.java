@@ -1,5 +1,6 @@
 package com.judy.ecommerce.backend.service;
 
+import com.judy.ecommerce.backend.OrderStatus;
 import com.judy.ecommerce.backend.dto.order.NewOrderDTO;
 import com.judy.ecommerce.backend.dto.order.OrderDTO;
 import com.judy.ecommerce.backend.dto.order.OrderProductDTO;
@@ -177,6 +178,7 @@ public class CartService {
         order.setDeliveryFirstName(orderInfos.deliveryFirstName());
         order.setDeliveryAddress(orderInfos.deliveryAddress());
         order.setShippingFees(shippingFees);
+        order.setStatus(OrderStatus.NOT_CONFIRMED);
         orderRepository.save(order);
 
         // Move products from cart to order
@@ -201,6 +203,7 @@ public class CartService {
                 order.getDeliveryLastName(),
                 order.getDeliveryFirstName(),
                 order.getDeliveryAddress(),
+                order.getStatus().toString(),
                 order.getOrderedAt()
         );
     }

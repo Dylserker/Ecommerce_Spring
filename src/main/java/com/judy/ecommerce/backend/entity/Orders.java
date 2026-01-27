@@ -1,5 +1,6 @@
 package com.judy.ecommerce.backend.entity;
 
+import com.judy.ecommerce.backend.OrderStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,6 +37,10 @@ public class Orders {
 
     @Column(nullable = false)
     private double shippingFees;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private OrderStatus status;
 
     @CreatedDate
     @Column(nullable = false)
