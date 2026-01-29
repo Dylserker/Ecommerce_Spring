@@ -1,12 +1,16 @@
 package com.judy.ecommerce.backend.service;
 
 import com.judy.ecommerce.backend.RoleEnum;
+import com.judy.ecommerce.backend.dto.search.PaginationDTO;
+import com.judy.ecommerce.backend.dto.search.SearchUsersDTO;
 import com.judy.ecommerce.backend.dto.user.EditUserDTO;
 import com.judy.ecommerce.backend.dto.user.PasswordDTO;
 import com.judy.ecommerce.backend.dto.user.UserDTO;
 import com.judy.ecommerce.backend.entity.Users;
 import com.judy.ecommerce.backend.exception.*;
 import com.judy.ecommerce.backend.repository.UserRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class UserService {
@@ -125,10 +128,15 @@ public class UserService {
 
     // ADMIN //
 
-    public List<UserDTO> getAllUsersAdmin() {
-        List<Users> users = userRepository.findAll();
+    public SearchUsersDTO getAllUsersAdmin(int page) {
+        // Defaults to 20 elements per page
+        Pageable pageable = PageRequest.of(page - 1, 20);
 
-        return listToDTO(users);
+        return toSearchDTO(
+                userRepository.findAllBy(pageable),
+                userRepository.countAllBy(),
+                pageable
+        );
     }
 
     public UserDTO getUserByIdAdmin(long id) {
@@ -201,5 +209,22 @@ public class UserService {
         }
 
         return listDTO;
+    }
+
+    private SearchUsersDTO toSearchDTO(List<Users> listUsers, int countUsers, Pageable pageable) {
+
+        return new SearchUsersDTO(
+                listToDTO(listUsers),
+                new PaginationDTO(
+                        pageable.getPageNumber() + 1,
+                        // Always have at least 1 page even if 0 items
+                        Math.max(
+                                (int) Math.ceil((double) countUsers / pageable.getPageSize()),
+                                1
+                        ),
+                        listUsers.size(),
+                        countUsers
+                )
+        );
     }
 }

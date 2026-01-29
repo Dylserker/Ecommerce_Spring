@@ -18,19 +18,56 @@ public interface ProductRepository extends JpaRepository<Products, Long> {
 
     /// Get all products, check for disabled, with pagination system
     List<Products> findAllByDisabledFalse(Pageable pageable);
+    int countAllByDisabledFalse();
 
     /// Return a list of products matching with its exact name, check for disabled
-    List<Products> findAllByNameAndDisabledFalse(String name, Pageable pageable);
+    //List<Products> findAllByNameAndDisabledFalse(String name, Pageable pageable);
 
     /// Return a list of products starting with the keyword, check for disabled
-    List<Products> findAllByNameStartingWithAndDisabledFalse(String name, Pageable pageable);
+    //List<Products> findAllByNameStartingWithAndDisabledFalse(String name, Pageable pageable);
 
     /// Return a list of products containing the keyword, check for disabled
-    List<Products> findAllByNameContainsAndDisabledFalse(String name, Pageable pageable);
+    //List<Products> findAllByNameContainsAndDisabledFalse(String name, Pageable pageable);
+
+    /// Handle search, exclude disabled items
+    /// Use a negative number if not present
+    @Query("""
+        SELECT p
+        FROM Products p
+        WHERE (p.name LIKE %:name%)
+            AND (:minPrice < 0 OR p.salePrice >= :minPrice)
+            AND (:maxPrice < 0 OR p.salePrice <= :maxPrice)
+            AND (:categoryId < 0 OR p.category.id = :categoryId)
+            AND p.disabled = FALSE
+    """)
+    List<Products> findAllByNameLikeAndSearchOptionsAndDisabledFalse(
+            String name,
+            double minPrice,
+            double maxPrice,
+            int categoryId,
+            Pageable pageable
+    );
+
+    @Query("""
+        SELECT COUNT(p)
+        FROM Products p
+        WHERE (p.name LIKE %:name%)
+            AND (:minPrice < 0 OR p.salePrice >= :minPrice)
+            AND (:maxPrice < 0 OR p.salePrice <= :maxPrice)
+            AND (:categoryId < 0 OR p.category.id = :categoryId)
+            AND p.disabled = FALSE
+    """)
+    int countAllByNameLikeAndSearchOptionsAndDisabledFalse(
+            String name,
+            double minPrice,
+            double maxPrice,
+            int categoryId
+    );
 
     /// Return a list of products in sale, doesn't check for disabled
     /// Sorted by highest sale
     List<Products> findAllBySalePercentGreaterThanAndDisabledFalseOrderBySalePercentDesc(double salePercent, Pageable pageable);
+    int countAllBySalePercentGreaterThanAndDisabledFalse(double salePercent);
 
     // ADMIN //
 
@@ -39,20 +76,54 @@ public interface ProductRepository extends JpaRepository<Products, Long> {
 
     /// Return the full list of products, with pagination system
     List<Products> findAllBy(Pageable pageable);
+    int countAllBy();
 
     /// Return a list of products matching with its exact name, doesn't check for disabled
-    List<Products> findAllByName(String name, Pageable pageable);
+    //List<Products> findAllByName(String name, Pageable pageable);
 
     /// Return a list of products starting with the keyword, doesn't check for disabled
-    List<Products> findAllByNameStartingWith(String name, Pageable pageable);
+    //List<Products> findAllByNameStartingWith(String name, Pageable pageable);
 
     /// Return a list of products containing the keyword, doesn't check for disabled
-    List<Products> findAllByNameContains(String name, Pageable pageable);
+    //List<Products> findAllByNameContains(String name, Pageable pageable);
 
     List<Products> findByCategory(Categories category);
 
-    /// Return a list of products in sale, doesn't check for disabled
+    /// Return/count a list of products in sale, doesn't check for disabled
     /// Sorted by highest sale
-    @Query("SELECT p FROM Products p WHERE p.price <> p.salePrice ORDER BY p.salePercent DESC")
     List<Products> findAllBySalePercentGreaterThanOrderBySalePercentDesc(double salePercent, Pageable pageable);
+    int countAllBySalePercentGreaterThan(double salePercent);
+
+    /// Handle search, include disabled items
+    /// Use a negative number if not present
+    @Query("""
+        SELECT p
+        FROM Products p
+        WHERE (p.name LIKE %:name%)
+            AND (:minPrice < 0 OR p.salePrice >= :minPrice)
+            AND (:maxPrice < 0 OR p.salePrice <= :maxPrice)
+            AND (:categoryId < 0 OR p.category.id = :categoryId)
+    """)
+    List<Products> findAllByNameLikeAndSearchOptions(
+            String name,
+            double minPrice,
+            double maxPrice,
+            int categoryId,
+            Pageable pageable
+    );
+
+    @Query("""
+        SELECT COUNT(p)
+        FROM Products p
+        WHERE (p.name LIKE %:name%)
+            AND (:minPrice < 0 OR p.salePrice >= :minPrice)
+            AND (:maxPrice < 0 OR p.salePrice <= :maxPrice)
+            AND (:categoryId < 0 OR p.category.id = :categoryId)
+    """)
+    int countAllByNameLikeAndSearchOptions(
+            String name,
+            double minPrice,
+            double maxPrice,
+            int categoryId
+    );
 }

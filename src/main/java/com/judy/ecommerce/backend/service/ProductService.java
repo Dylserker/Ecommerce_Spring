@@ -3,6 +3,8 @@ package com.judy.ecommerce.backend.service;
 import com.judy.ecommerce.backend.dto.product.NewProductDTO;
 import com.judy.ecommerce.backend.dto.product.ProductDTO;
 import com.judy.ecommerce.backend.dto.filter.ProductFilterDTO;
+import com.judy.ecommerce.backend.dto.search.PaginationDTO;
+import com.judy.ecommerce.backend.dto.search.SearchProductsDTO;
 import com.judy.ecommerce.backend.entity.Categories;
 import com.judy.ecommerce.backend.entity.Products;
 import com.judy.ecommerce.backend.exception.InvalidFormatException;
@@ -14,10 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class ProductService {
@@ -31,17 +30,25 @@ public class ProductService {
         this.categoryRepository = categoryRepository;
     }
 
-    public List<ProductDTO> getAllProducts(boolean admin, int page) {
+    public SearchProductsDTO getAllProducts(boolean admin, int page) {
         // Defaults to 20 elements per page
         Pageable pageable = PageRequest.of(page - 1, 20);
 
         if (admin) {
             // Get all products, even if disabled
-            return listToDTO(productRepository.findAllBy(pageable));
+            return toSearchDTO(
+                    productRepository.findAllBy(pageable),
+                    productRepository.countAllBy(),
+                    pageable
+            );
         }
 
         // Get all products, check for disabled
-        return listToDTO(productRepository.findAllByDisabledFalse(pageable));
+        return toSearchDTO(
+                productRepository.findAllByDisabledFalse(pageable),
+                productRepository.countAllByDisabledFalse(),
+                pageable
+        );
     }
 
     public ProductDTO getProductById(int id, boolean admin) {
@@ -58,94 +65,128 @@ public class ProductService {
         return productToDTO(product);
     }
 
-    public List<ProductDTO> getAllProductsInSale(boolean admin, int page) {
+    public SearchProductsDTO getAllProductsInSale(boolean admin, int page) {
         // Defaults to 20 elements per page
         Pageable pageable = PageRequest.of(page - 1, 20);
 
         if (admin) {
             // Get all products in sale, even if disabled
-            return listToDTO(
-                    productRepository.findAllBySalePercentGreaterThanOrderBySalePercentDesc(0, pageable)
+            return toSearchDTO(
+                    productRepository.findAllBySalePercentGreaterThanOrderBySalePercentDesc(0, pageable),
+                    productRepository.countAllBySalePercentGreaterThan(0),
+                    pageable
             );
         } else {
             // Get all products in sale, check for disabled
-            return listToDTO(
-                    productRepository.findAllBySalePercentGreaterThanAndDisabledFalseOrderBySalePercentDesc(0, pageable)
+            return toSearchDTO(
+                    productRepository.findAllBySalePercentGreaterThanAndDisabledFalseOrderBySalePercentDesc(0, pageable),
+                    productRepository.countAllBySalePercentGreaterThanAndDisabledFalse(0),
+                    pageable
             );
         }
     }
 
-    public List<ProductDTO> searchProducts(String input, ProductFilterDTO filters, boolean admin, int page) {
+    public SearchProductsDTO searchProducts(String input, ProductFilterDTO filters, boolean admin, int page) {
         // Defaults to 20 elements per page
         Pageable pageable = PageRequest.of(page - 1, 20);
 
-        // Make sure minPrice and maxPrice are correct
-        if (filters.minPrice().isPresent()) {
-            if (filters.minPrice().get() < 0) {
-                throw new InvalidFormatException("Min price must be positive.");
+        // Init everything
+        double minPrice = -1;
+        double maxPrice = -1;
+        int categoryId = -1;
+
+        // If filters is not null
+        if (filters != null) {
+            // Check data and reassign variables
+            if (filters.minPrice().isPresent()) {
+                minPrice = filters.minPrice().get();
+
+                if (minPrice < 0) {
+                    throw new InvalidFormatException("Min price must be positive.");
+                }
+            }
+
+            if (filters.maxPrice().isPresent()) {
+                maxPrice = filters.maxPrice().get();
+
+                if (maxPrice <= 0) {
+                    throw new InvalidFormatException("Max price must be greater than 0.");
+                }
+            }
+
+            if (filters.minPrice().isPresent() && filters.maxPrice().isPresent()) {
+                if (filters.minPrice().get() > filters.maxPrice().get()) {
+                    throw new InvalidFormatException("Min price must be lower than max price.");
+                }
+            }
+
+            if (filters.categoryId().isPresent()) {
+                categoryId = filters.categoryId().get();
             }
         }
 
-        if (filters.maxPrice().isPresent()) {
-            if (filters.maxPrice().get() <= 0) {
-                throw new InvalidFormatException("Max price must be greater than 0.");
-            }
-        }
-
-        if (filters.minPrice().isPresent() && filters.maxPrice().isPresent()) {
-            if (filters.minPrice().get() > filters.maxPrice().get()) {
-                throw new InvalidFormatException("Min price must be lower than max price.");
-            }
-        }
-
-        List<Products> productsExact;
-        List<Products> productsStarting;
-        List<Products> productsContains;
+//        List<Products> productsExact;
+//        List<Products> productsStarting;
+//        List<Products> productsContains;
+//
+//        if (admin) {
+//            productsExact = productRepository.findAllByName(input, pageable);
+//            productsStarting = productRepository.findAllByNameStartingWith(input, pageable);
+//            productsContains = productRepository.findAllByNameContains(input, pageable);
+//        } else {
+//            productsExact = productRepository.findAllByNameAndDisabledFalse(input, pageable);
+//            productsStarting = productRepository.findAllByNameStartingWithAndDisabledFalse(input, pageable);
+//            productsContains = productRepository.findAllByNameContainsAndDisabledFalse(input, pageable);
+//        }
+//        List<Products> resultAll = new ArrayList<>(
+//                Stream.of(
+//                                productsExact,
+//                                productsStarting,
+//                                productsContains
+//                        )
+//                        .flatMap(List::stream)
+//                        .collect(Collectors.toMap(
+//                                Products::getId,
+//                                d -> d,
+//                                (existing, replacement) -> existing,
+//                                LinkedHashMap::new
+//                        ))
+//                        .values()
+//        );
+        List<Products> resultAll;
+        int countAll;
 
         if (admin) {
-            productsExact = productRepository.findAllByName(input, pageable);
-            productsStarting = productRepository.findAllByNameStartingWith(input, pageable);
-            productsContains = productRepository.findAllByNameContains(input, pageable);
+            resultAll = productRepository.findAllByNameLikeAndSearchOptions(
+                    input,
+                    minPrice,
+                    maxPrice,
+                    categoryId,
+                    pageable
+            );
+            countAll = productRepository.countAllByNameLikeAndSearchOptions(
+                    input,
+                    minPrice,
+                    maxPrice,
+                    categoryId
+            );
         } else {
-            productsExact = productRepository.findAllByNameAndDisabledFalse(input, pageable);
-            productsStarting = productRepository.findAllByNameStartingWithAndDisabledFalse(input, pageable);
-            productsContains = productRepository.findAllByNameContainsAndDisabledFalse(input, pageable);
-        }
-        List<Products> resultAll = new ArrayList<>(
-                Stream.of(
-                                productsExact,
-                                productsStarting,
-                                productsContains
-                        )
-                        .flatMap(List::stream)
-                        .collect(Collectors.toMap(
-                                Products::getId,
-                                d -> d,
-                                (existing, replacement) -> existing,
-                                LinkedHashMap::new
-                        ))
-                        .values()
-        );
-
-        if (filters.minPrice().isPresent()) {
-            resultAll = resultAll.stream()
-                    .filter(p -> p.getPrice() >= filters.minPrice().get())
-                    .toList();
+            resultAll = productRepository.findAllByNameLikeAndSearchOptionsAndDisabledFalse(
+                    input,
+                    minPrice,
+                    maxPrice,
+                    categoryId,
+                    pageable
+            );
+            countAll = productRepository.countAllByNameLikeAndSearchOptionsAndDisabledFalse(
+                    input,
+                    minPrice,
+                    maxPrice,
+                    categoryId
+            );
         }
 
-        if (filters.maxPrice().isPresent()) {
-            resultAll = resultAll.stream()
-                    .filter(p -> p.getPrice() <= filters.maxPrice().get())
-                    .toList();
-        }
-
-        if (filters.categoryId().isPresent()) {
-            resultAll = resultAll.stream()
-                    .filter(p -> p.getCategory().getId() == filters.categoryId().get())
-                    .toList();
-        }
-
-        return listToDTO(resultAll);
+        return toSearchDTO(resultAll, countAll, pageable);
     }
 
 
@@ -237,5 +278,21 @@ public class ProductService {
         productRepository.save(targetProduct);
 
         return productToDTO(targetProduct);
+    }
+
+    private SearchProductsDTO toSearchDTO(List<Products> listProducts, int countProducts, Pageable pageable) {
+        return new SearchProductsDTO(
+                listToDTO(listProducts),
+                new PaginationDTO(
+                        pageable.getPageNumber() + 1,
+                        // Always have at least 1 page even if 0 items
+                        Math.max(
+                                (int) Math.ceil((double) countProducts / pageable.getPageSize()),
+                                1
+                        ),
+                        listProducts.size(),
+                        countProducts
+                )
+        );
     }
 }

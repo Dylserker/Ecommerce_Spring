@@ -3,6 +3,8 @@ package com.judy.ecommerce.backend.service;
 import com.judy.ecommerce.backend.OrderStatus;
 import com.judy.ecommerce.backend.dto.order.OrderDTO;
 import com.judy.ecommerce.backend.dto.order.OrderProductDTO;
+import com.judy.ecommerce.backend.dto.search.PaginationDTO;
+import com.judy.ecommerce.backend.dto.search.SearchOrdersDTO;
 import com.judy.ecommerce.backend.entity.OrderProducts;
 import com.judy.ecommerce.backend.entity.Orders;
 import com.judy.ecommerce.backend.entity.Products;
@@ -14,6 +16,8 @@ import com.judy.ecommerce.backend.repository.OrderProductRepository;
 import com.judy.ecommerce.backend.repository.OrderRepository;
 import com.judy.ecommerce.backend.repository.ProductRepository;
 import com.judy.ecommerce.backend.repository.UserRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -37,16 +41,34 @@ public class OrderService {
         this.productRepository = productRepository;
     }
 
-    public List<OrderDTO> getAllOrders(String username, String status) {
+    public SearchOrdersDTO getAllOrders(String username, String status, int page) {
         Users user = userRepository.findByEmailIgnoreCaseAndDisabledFalse(username)
                 .orElseThrow();
 
+        // Defaults to 20 elements per page
+        Pageable pageable = PageRequest.of(page - 1, 20);
+
         try {
             // Try to return the desired status
-            return listToDTO(orderRepository.findAllByUserAndStatusOrderByOrderedAtDesc(user, OrderStatus.valueOf(status.toUpperCase())));
+            return toSearchDTO(
+                    orderRepository.findAllByUserAndStatusOrderByOrderedAtDesc(
+                            user,
+                            OrderStatus.valueOf(status.toUpperCase()),
+                            pageable
+                    ),
+                    orderRepository.countAllByUserAndStatus(
+                            user,
+                            OrderStatus.valueOf(status.toUpperCase())
+                    ),
+                    pageable
+            );
         } catch (IllegalArgumentException e) {
             // Fallback to any if no/wrong status
-            return listToDTO(orderRepository.findAllByUserOrderByOrderedAtDesc(user));
+            return toSearchDTO(
+                    orderRepository.findAllByUserOrderByOrderedAtDesc(user, pageable),
+                    orderRepository.countAllByUser(user),
+                    pageable
+            );
         }
     }
 
@@ -73,13 +95,29 @@ public class OrderService {
 
     // ADMIN //
 
-    public List<OrderDTO> getAllOrdersAdmin(String status) {
+    public SearchOrdersDTO getAllOrdersAdmin(String status, int page) {
+        // Defaults to 20 elements per page
+        Pageable pageable = PageRequest.of(page - 1, 20);
+
         try {
             // Try to return the desired status
-            return listToDTO(orderRepository.findAllByStatusOrderByOrderedAtDesc(OrderStatus.valueOf(status.toUpperCase())));
+            return toSearchDTO(
+                    orderRepository.findAllByStatusOrderByOrderedAtDesc(
+                            OrderStatus.valueOf(status.toUpperCase()),
+                            pageable
+                    ),
+                    orderRepository.countAllByStatus(
+                            OrderStatus.valueOf(status.toUpperCase())
+                    ),
+                    pageable
+            );
         } catch (IllegalArgumentException e) {
             // Fallback to any if no/wrong status
-            return listToDTO(orderRepository.findAllByOrderByOrderedAtDesc());
+            return toSearchDTO(
+                    orderRepository.findAllByOrderByOrderedAtDesc(pageable),
+                    orderRepository.countAllBy(),
+                    pageable
+            );
         }
     }
 
@@ -196,5 +234,22 @@ public class OrderService {
         }
 
         return listDTO;
+    }
+
+    private SearchOrdersDTO toSearchDTO(List<Orders> listOrders, int countOrders, Pageable pageable) {
+
+        return new SearchOrdersDTO(
+                listToDTO(listOrders),
+                new PaginationDTO(
+                        pageable.getPageNumber() + 1,
+                        // Always have at least 1 page even if 0 items
+                        Math.max(
+                                (int) Math.ceil((double) countOrders / pageable.getPageSize()),
+                                1
+                        ),
+                        listOrders.size(),
+                        countOrders
+                )
+        );
     }
 }

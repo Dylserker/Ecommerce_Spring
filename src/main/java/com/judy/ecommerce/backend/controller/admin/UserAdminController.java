@@ -1,6 +1,7 @@
 package com.judy.ecommerce.backend.controller.admin;
 
 import com.judy.ecommerce.backend.RoleEnum;
+import com.judy.ecommerce.backend.dto.search.SearchUsersDTO;
 import com.judy.ecommerce.backend.dto.user.UserDTO;
 import com.judy.ecommerce.backend.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +22,8 @@ public class UserAdminController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<UserDTO>> getAllUsersAdmin() {
-        return ResponseEntity.ok(userService.getAllUsersAdmin());
+    public ResponseEntity<SearchUsersDTO> getAllUsersAdmin(@RequestParam(required = false, defaultValue = "1") int page) {
+        return ResponseEntity.ok(userService.getAllUsersAdmin(page));
     }
 
     @GetMapping("/{id}")

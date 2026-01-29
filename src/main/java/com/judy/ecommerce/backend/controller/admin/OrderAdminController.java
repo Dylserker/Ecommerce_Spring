@@ -2,6 +2,7 @@ package com.judy.ecommerce.backend.controller.admin;
 
 import com.judy.ecommerce.backend.OrderStatus;
 import com.judy.ecommerce.backend.dto.order.OrderDTO;
+import com.judy.ecommerce.backend.dto.search.SearchOrdersDTO;
 import com.judy.ecommerce.backend.service.OrderService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,8 +20,9 @@ public class OrderAdminController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<OrderDTO>> getAllOrdersAdmin(@RequestParam(required = false, defaultValue = "all") String status) {
-        return ResponseEntity.ok(orderService.getAllOrdersAdmin(status));
+    public ResponseEntity<SearchOrdersDTO> getAllOrdersAdmin(@RequestParam(required = false, defaultValue = "all") String status,
+                                                             @RequestParam(required = false, defaultValue = "1") int page) {
+        return ResponseEntity.ok(orderService.getAllOrdersAdmin(status, page));
     }
 
     @GetMapping("/{id}")

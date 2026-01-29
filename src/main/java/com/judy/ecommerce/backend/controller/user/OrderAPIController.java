@@ -1,6 +1,7 @@
 package com.judy.ecommerce.backend.controller.user;
 
 import com.judy.ecommerce.backend.dto.order.OrderDTO;
+import com.judy.ecommerce.backend.dto.search.SearchOrdersDTO;
 import com.judy.ecommerce.backend.service.OrderService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,9 +21,10 @@ public class OrderAPIController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<OrderDTO>> getAllOrders(@AuthenticationPrincipal UserDetails userDetails,
-                                                       @RequestParam(required = false, defaultValue = "all") String status) {
-        return ResponseEntity.ok(orderService.getAllOrders(userDetails.getUsername(), status));
+    public ResponseEntity<SearchOrdersDTO> getAllOrders(@AuthenticationPrincipal UserDetails userDetails,
+                                                        @RequestParam(required = false, defaultValue = "all") String status,
+                                                        @RequestParam(required = false, defaultValue = "1") int page) {
+        return ResponseEntity.ok(orderService.getAllOrders(userDetails.getUsername(), status, page));
     }
 
     @GetMapping("/{id}")

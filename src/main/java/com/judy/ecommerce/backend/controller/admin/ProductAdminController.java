@@ -3,6 +3,7 @@ package com.judy.ecommerce.backend.controller.admin;
 import com.judy.ecommerce.backend.dto.product.NewProductDTO;
 import com.judy.ecommerce.backend.dto.product.ProductDTO;
 import com.judy.ecommerce.backend.dto.filter.ProductFilterDTO;
+import com.judy.ecommerce.backend.dto.search.SearchProductsDTO;
 import com.judy.ecommerce.backend.service.ProductService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -22,12 +23,12 @@ public class ProductAdminController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<ProductDTO>> getAllProductsAdmin(@RequestParam(required = false, defaultValue = "1") int page) {
+    public ResponseEntity<SearchProductsDTO> getAllProductsAdmin(@RequestParam(required = false, defaultValue = "1") int page) {
         return ResponseEntity.ok(productService.getAllProducts(true, page));
     }
 
     @GetMapping("/sale")
-    public ResponseEntity<List<ProductDTO>> getAllProductsInSale(@RequestParam(required = false, defaultValue = "1") int page) {
+    public ResponseEntity<SearchProductsDTO> getAllProductsInSale(@RequestParam(required = false, defaultValue = "1") int page) {
         return ResponseEntity.ok(productService.getAllProductsInSale(true, page));
     }
 
@@ -36,10 +37,16 @@ public class ProductAdminController {
         return ResponseEntity.ok(productService.getProductById(id, true));
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<SearchProductsDTO> searchProductsAdmin(@RequestBody(required=false) @Valid ProductFilterDTO filters,
+                                                                 @RequestParam(required = false, defaultValue = "1") int page) {
+        return ResponseEntity.ok(productService.searchProducts("", filters, true, page));
+    }
+
     @GetMapping("/search/{input}")
-    public ResponseEntity<List<ProductDTO>> searchProductsAdmin(@PathVariable String input,
-                                                                @RequestBody(required=false) @Valid ProductFilterDTO filters,
-                                                                @RequestParam(required = false, defaultValue = "1") int page) {
+    public ResponseEntity<SearchProductsDTO> searchProductsAdmin(@PathVariable String input,
+                                                                 @RequestBody(required=false) @Valid ProductFilterDTO filters,
+                                                                 @RequestParam(required = false, defaultValue = "1") int page) {
         return ResponseEntity.ok(productService.searchProducts(input, filters, true, page));
     }
 

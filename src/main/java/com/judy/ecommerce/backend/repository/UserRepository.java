@@ -2,9 +2,11 @@ package com.judy.ecommerce.backend.repository;
 
 import com.judy.ecommerce.backend.RoleEnum;
 import com.judy.ecommerce.backend.entity.Users;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<Users, Long> {
@@ -24,6 +26,8 @@ public interface UserRepository extends JpaRepository<Users, Long> {
     // Should only take "ADMIN" as parameter to avoid deleting all admins
     int countUsersByRoleIs(RoleEnum role);
 
+    List<Users> findAllBy(Pageable pageable);
+    int countAllBy();
 
     // INITIALIZER //
 
