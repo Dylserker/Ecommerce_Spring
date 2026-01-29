@@ -26,7 +26,7 @@
                 <tbody id="usersTableBody">
                     <tr class="user-row" th:each="user : ${users}">
                         <td class="user-details">
-                            <div class="user-detail-text" th:text="${user.name} + ' / ' + ${user.firstName} + ' / ' + ${user.gender} + ' / ' + ${user.role} + ' / ' + ${user.email} + ' / ' + ${user.passwordHash}">nom / prénom / sexe / role / email / mdp hash</div>
+                            <div class="user-detail-text" th:text="${user.lastName} + ' / ' + ${user.firstName} + ${user.role} + ' / ' + ${user.email}">nom / prénom / role / email</div>
                         </td>
                         <td class="user-actions">
                             <button class="btn-edit" th:onclick="'editUser(' + ${user.id} + ')'" title="Éditer">Modifier</button>

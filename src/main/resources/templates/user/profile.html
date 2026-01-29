@@ -15,7 +15,7 @@
                     <div class="profile-sidebar">
                         <div class="profile-pic">Photo</div>
                         <div class="profile-title" th:text="${user != null ? user['role'] : 'Utilisateur'}">M / Mme</div>
-                        <div class="profile-name" th:text="${user != null ? user['firstName'] + ' ' + user['lastName'] : 'Nom et prénom'}">Nom et prénom</div>
+                        <div class="profile-name" th:text="${user != null ? user['lastName'] + ' ' + user['firstName'] : 'Nom et prénom'}">Nom et prénom</div>
                         <a th:href="@{/}" class="btn-secondary" style="text-decoration: none; display: block; text-align: center;">Déconnecter</a>
                     </div>
 
@@ -31,12 +31,12 @@
                                     <h2 class="section-title">Informations</h2>
                                     <div class="profile-info">
                                         <div class="info-group">
-                                            <div class="info-label">Prénom</div>
-                                            <input class="info-value" name="firstName" th:value="${user != null ? user['firstName'] : ''}" readonly>
-                                        </div>
-                                        <div class="info-group">
                                             <div class="info-label">Nom</div>
                                             <input class="info-value" name="lastName" th:value="${user != null ? user['lastName'] : ''}" readonly>
+                                        </div>
+                                        <div class="info-group">
+                                            <div class="info-label">Prénom</div>
+                                            <input class="info-value" name="firstName" th:value="${user != null ? user['firstName'] : ''}" readonly>
                                         </div>
                                         <div class="info-group">
                                             <div class="info-label">Email</div>

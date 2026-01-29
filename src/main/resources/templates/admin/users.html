@@ -23,7 +23,7 @@
                 </thead>
                 <tbody id="usersTableBody">
                     <tr class="user-row" th:each="user : ${users}">
-                        <td class="user-name" th:text="${user.firstName} + ' / ' + ${user.lastName}">nom / prénom</td>
+                        <td class="user-name" th:text="${user.lastName} + ' / ' + ${user.firstName}">nom / prénom</td>
                         <td class="user-role" th:text="${user.role}">rôle</td>
                         <td class="user-email" th:text="${user.email}">email</td>
                         <td class="user-actions">
