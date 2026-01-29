@@ -3,11 +3,12 @@ package com.judy.ecommerce.backend.service;
 import com.judy.ecommerce.backend.OrderStatus;
 import com.judy.ecommerce.backend.dto.order.NewOrderDTO;
 import com.judy.ecommerce.backend.dto.order.OrderDTO;
-import com.judy.ecommerce.backend.dto.order.OrderProductDTO;
 import com.judy.ecommerce.backend.dto.cart.CartProductDTO;
 import com.judy.ecommerce.backend.entity.*;
+import com.judy.ecommerce.backend.exception.BadRequestException;
+import com.judy.ecommerce.backend.exception.ConflictException;
 import com.judy.ecommerce.backend.exception.ResourceNotFoundException;
-import com.judy.ecommerce.backend.exception.UnauthorizedException;
+import com.judy.ecommerce.backend.exception.ForbiddenException;
 import com.judy.ecommerce.backend.repository.*;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -149,7 +150,7 @@ public class CartService {
         double shippingFees = Double.parseDouble(config.getConfigValue());
 
         if (cartProducts.isEmpty()) {
-            throw new UnauthorizedException("Cart is empty.");
+            throw new BadRequestException("Cart is empty.");
         }
 
         // Check if requested quantity is still ok
@@ -158,7 +159,7 @@ public class CartService {
             Products product = cart.getProduct();
 
             if (cart.getProduct().isDisabled()) {
-                throw new UnauthorizedException(product.getName() + ": This product cannot be ordered anymore.");
+                throw new ConflictException(product.getName() + ": This product cannot be ordered anymore.");
             }
 
             checkQuantity(product, cart.getQuantity());
@@ -178,7 +179,7 @@ public class CartService {
         order.setDeliveryFirstName(orderInfos.deliveryFirstName());
         order.setDeliveryAddress(orderInfos.deliveryAddress());
         order.setShippingFees(shippingFees);
-        order.setStatus(OrderStatus.NOT_CONFIRMED);
+        order.setStatus(OrderStatus.CONFIRMED);
         orderRepository.save(order);
 
         // Move products from cart to order
@@ -197,7 +198,7 @@ public class CartService {
         return new OrderDTO(
                 order.getId(),
                 order.getUser().getId(),
-                getOrderProducts(orderProducts),
+                OrderService.getOrderProducts(orderProducts),
                 orderProductRepository.getPriceSumByOrder(order),
                 order.getShippingFees(),
                 order.getDeliveryLastName(),
@@ -234,25 +235,9 @@ public class CartService {
         return products;
     }
 
-    private List<OrderProductDTO> getOrderProducts(List<OrderProducts> orderProducts) {
-        List<OrderProductDTO> products = new ArrayList<>();
-
-        for (OrderProducts op : orderProducts) {
-            Products product = op.getProduct();
-            products.add(new OrderProductDTO(
-                    product.getId(),
-                    product.getName(),
-                    product.getSalePrice(),
-                    op.getQuantity()
-            ));
-        }
-
-        return products;
-    }
-
     private void checkQuantity(Products product, int quantityRequested) {
         if (product.getQuantity() - quantityRequested < 0) {
-            throw new UnauthorizedException(product.getName() + ": Insufficient stock left.");
+            throw new ConflictException(product.getName() + ": Insufficient stock left.");
         }
     }
 }

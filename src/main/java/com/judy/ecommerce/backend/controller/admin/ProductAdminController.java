@@ -2,7 +2,7 @@ package com.judy.ecommerce.backend.controller.admin;
 
 import com.judy.ecommerce.backend.dto.product.NewProductDTO;
 import com.judy.ecommerce.backend.dto.product.ProductDTO;
-import com.judy.ecommerce.backend.dto.search.FiltersDTO;
+import com.judy.ecommerce.backend.dto.filter.ProductFilterDTO;
 import com.judy.ecommerce.backend.service.ProductService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -22,13 +22,13 @@ public class ProductAdminController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<ProductDTO>> getAllProductAdmin() {
-        return ResponseEntity.ok(productService.getAllProducts(true));
+    public ResponseEntity<List<ProductDTO>> getAllProductsAdmin(@RequestParam(required = false, defaultValue = "1") int page) {
+        return ResponseEntity.ok(productService.getAllProducts(true, page));
     }
 
     @GetMapping("/sale")
-    public ResponseEntity<List<ProductDTO>> getAllProductsInSale() {
-        return ResponseEntity.ok(productService.getAllProductsInSale(true));
+    public ResponseEntity<List<ProductDTO>> getAllProductsInSale(@RequestParam(required = false, defaultValue = "1") int page) {
+        return ResponseEntity.ok(productService.getAllProductsInSale(true, page));
     }
 
     @GetMapping("/{id}")
@@ -38,8 +38,9 @@ public class ProductAdminController {
 
     @GetMapping("/search/{input}")
     public ResponseEntity<List<ProductDTO>> searchProductsAdmin(@PathVariable String input,
-                                                                @RequestBody(required=false) @Valid FiltersDTO filters) {
-        return ResponseEntity.ok(productService.searchProducts(input, filters, true));
+                                                                @RequestBody(required=false) @Valid ProductFilterDTO filters,
+                                                                @RequestParam(required = false, defaultValue = "1") int page) {
+        return ResponseEntity.ok(productService.searchProducts(input, filters, true, page));
     }
 
     @PostMapping()

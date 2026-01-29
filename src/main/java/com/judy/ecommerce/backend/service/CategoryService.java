@@ -5,7 +5,7 @@ import com.judy.ecommerce.backend.dto.category.NewCategoryDTO;
 import com.judy.ecommerce.backend.entity.Categories;
 import com.judy.ecommerce.backend.entity.Products;
 import com.judy.ecommerce.backend.exception.ResourceNotFoundException;
-import com.judy.ecommerce.backend.exception.UnauthorizedException;
+import com.judy.ecommerce.backend.exception.ForbiddenException;
 import com.judy.ecommerce.backend.repository.CategoryRepository;
 import com.judy.ecommerce.backend.repository.ProductRepository;
 import org.springframework.stereotype.Service;
@@ -50,7 +50,7 @@ public class CategoryService {
 
     public CategoryDTO editCategory(long id, NewCategoryDTO editCategory) {
         if (id == 1) {
-            throw new UnauthorizedException("Cannot edit the default category.");
+            throw new ForbiddenException("Cannot edit the default category.");
         }
 
         // Check and get the category
@@ -62,7 +62,7 @@ public class CategoryService {
 
     public void deleteCategory(long id) {
         if (id == 1) {
-            throw new UnauthorizedException("Cannot delete the default category.");
+            throw new ForbiddenException("Cannot delete the default category.");
         }
 
         // Check and get the category

@@ -1,6 +1,7 @@
 package com.judy.ecommerce.backend.security;
 
 import com.judy.ecommerce.backend.entity.Users;
+import com.judy.ecommerce.backend.exception.ForbiddenException;
 import com.judy.ecommerce.backend.exception.UnauthorizedException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;

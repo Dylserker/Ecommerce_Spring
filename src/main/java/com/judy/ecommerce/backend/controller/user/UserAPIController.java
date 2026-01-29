@@ -1,7 +1,6 @@
 package com.judy.ecommerce.backend.controller.user;
 
 import com.judy.ecommerce.backend.dto.user.EditUserDTO;
-import com.judy.ecommerce.backend.dto.user.EmailDTO;
 import com.judy.ecommerce.backend.dto.user.PasswordDTO;
 import com.judy.ecommerce.backend.dto.user.UserDTO;
 import com.judy.ecommerce.backend.service.UserService;
@@ -30,13 +29,6 @@ public class UserAPIController {
     public ResponseEntity<UserDTO> updateSelfInfo(@AuthenticationPrincipal UserDetails userDetails,
                                                   @RequestBody EditUserDTO editUserDTO) {
         return ResponseEntity.ok(userService.editSelfInfo(userDetails, editUserDTO));
-    }
-
-    @PatchMapping("/email")
-    public ResponseEntity<String> updateSelfEmail(@AuthenticationPrincipal UserDetails userDetails,
-                                                  @RequestBody @Valid EmailDTO emailDTO) {
-        userService.editSelfEmail(userDetails, emailDTO);
-        return ResponseEntity.ok("Email changed.");
     }
 
     @PatchMapping("/password")

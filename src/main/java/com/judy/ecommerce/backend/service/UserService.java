@@ -2,7 +2,6 @@ package com.judy.ecommerce.backend.service;
 
 import com.judy.ecommerce.backend.RoleEnum;
 import com.judy.ecommerce.backend.dto.user.EditUserDTO;
-import com.judy.ecommerce.backend.dto.user.EmailDTO;
 import com.judy.ecommerce.backend.dto.user.PasswordDTO;
 import com.judy.ecommerce.backend.dto.user.UserDTO;
 import com.judy.ecommerce.backend.entity.Users;
@@ -68,32 +67,29 @@ public class UserService {
             user.setFirstname(firstName);
         }
 
+        if (editUserDTO.email().isPresent()) {
+            String email = editUserDTO.email().get();
+
+            // Check email size
+            if (email.length() > 255) {
+                throw new InvalidFormatException("Email cannot exceed 255 characters.");
+            }
+
+            // Check email format, also check and disallow + aliases, + check uniqueness
+            if (email.matches("^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
+                throw new InvalidFormatException("Invalid email format.");
+            }
+
+            if (userRepository.existsByEmailIgnoreCaseAndDisabledFalse(email)) {
+                throw new ConflictException("There is already an account linked with this email address.");
+            }
+
+            user.setEmail(email);
+        }
+
         userRepository.save(user);
 
         return userToDTO(user);
-    }
-
-    public void editSelfEmail(UserDetails userDetails, EmailDTO emailDTO) {
-        // Shouldn't fail
-        Users user = userRepository.findByEmailIgnoreCaseAndDisabledFalse(userDetails.getUsername())
-                .orElseThrow();
-
-        if (Objects.equals(user.getEmail(), emailDTO.email())) {
-            throw new NoModificationsException("No modification applied.");
-        }
-
-        // Check email format, also check and disallow + aliases, + check uniqueness
-        if (!emailDTO.email().matches("^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
-            throw new InvalidFormatException("Invalid email format.");
-        }
-
-        if (userRepository.existsByEmailIgnoreCaseAndDisabledFalse(emailDTO.email())) {
-            throw new ConflictException("There is already an account linked with this email address.");
-        }
-
-        user.setEmail(emailDTO.email());
-
-        userRepository.save(user);
     }
 
     public void editSelfPassword(UserDetails userDetails, PasswordDTO passwordDTO) {
@@ -118,7 +114,7 @@ public class UserService {
         if (user.getRole() == RoleEnum.ADMIN) {
             // Make sure the user table contains at least another admin to avoid being locked out
             if (userRepository.countUsersByRoleIs(RoleEnum.ADMIN) < 2) {
-                throw new UnauthorizedException("Cannot disable user, there must be at least 1 active admin.");
+                throw new ConflictException("Cannot disable user, there must be at least 1 active admin.");
             }
         }
 
@@ -150,7 +146,7 @@ public class UserService {
 
         // Do not change your own role
         if (selfUser.getId() == id) {
-            throw new UnauthorizedException("Cannot change your own role.");
+            throw new ForbiddenException("Cannot change your own role.");
         }
 
         // Get the account to change
@@ -170,7 +166,7 @@ public class UserService {
 
         // Do not disable its own account this way
         if (selfUser.getId() == id) {
-            throw new UnauthorizedException("Cannot disable your account this way.");
+            throw new BadRequestException("Cannot disable your account this way.");
         }
 
         // Get the account to disable
