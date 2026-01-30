@@ -5,5 +5,6 @@ import java.util.Optional;
 public record ProductFilterDTO(
     Optional<Double> minPrice,
     Optional<Double> maxPrice,
-    Optional<Integer> categoryId
+    Optional<Integer> categoryId,
+    Optional<Boolean> onlyInStock
 ) {}

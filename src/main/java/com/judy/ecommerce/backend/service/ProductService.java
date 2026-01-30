@@ -91,9 +91,12 @@ public class ProductService {
         Pageable pageable = PageRequest.of(page - 1, 20);
 
         // Init everything
+        // -1 means "null" in this case
         double minPrice = -1;
         double maxPrice = -1;
         int categoryId = -1;
+        // 0 to allow looking for products with stock >= 0
+        int onlyInStock = 0;
 
         // If filters is not null
         if (filters != null) {
@@ -123,36 +126,14 @@ public class ProductService {
             if (filters.categoryId().isPresent()) {
                 categoryId = filters.categoryId().get();
             }
+
+            if (filters.onlyInStock().isPresent()) {
+                if (filters.onlyInStock().get()) {
+                    onlyInStock = 1;
+                }
+            }
         }
 
-//        List<Products> productsExact;
-//        List<Products> productsStarting;
-//        List<Products> productsContains;
-//
-//        if (admin) {
-//            productsExact = productRepository.findAllByName(input, pageable);
-//            productsStarting = productRepository.findAllByNameStartingWith(input, pageable);
-//            productsContains = productRepository.findAllByNameContains(input, pageable);
-//        } else {
-//            productsExact = productRepository.findAllByNameAndDisabledFalse(input, pageable);
-//            productsStarting = productRepository.findAllByNameStartingWithAndDisabledFalse(input, pageable);
-//            productsContains = productRepository.findAllByNameContainsAndDisabledFalse(input, pageable);
-//        }
-//        List<Products> resultAll = new ArrayList<>(
-//                Stream.of(
-//                                productsExact,
-//                                productsStarting,
-//                                productsContains
-//                        )
-//                        .flatMap(List::stream)
-//                        .collect(Collectors.toMap(
-//                                Products::getId,
-//                                d -> d,
-//                                (existing, replacement) -> existing,
-//                                LinkedHashMap::new
-//                        ))
-//                        .values()
-//        );
         List<Products> resultAll;
         int countAll;
 
@@ -162,13 +143,15 @@ public class ProductService {
                     minPrice,
                     maxPrice,
                     categoryId,
+                    onlyInStock,
                     pageable
             );
             countAll = productRepository.countAllByNameLikeAndSearchOptions(
                     input,
                     minPrice,
                     maxPrice,
-                    categoryId
+                    categoryId,
+                    onlyInStock
             );
         } else {
             resultAll = productRepository.findAllByNameLikeAndSearchOptionsAndDisabledFalse(
@@ -176,13 +159,15 @@ public class ProductService {
                     minPrice,
                     maxPrice,
                     categoryId,
+                    onlyInStock,
                     pageable
             );
             countAll = productRepository.countAllByNameLikeAndSearchOptionsAndDisabledFalse(
                     input,
                     minPrice,
                     maxPrice,
-                    categoryId
+                    categoryId,
+                    onlyInStock
             );
         }
 

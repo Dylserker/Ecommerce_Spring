@@ -38,6 +38,7 @@ public interface ProductRepository extends JpaRepository<Products, Long> {
             AND (:minPrice < 0 OR p.salePrice >= :minPrice)
             AND (:maxPrice < 0 OR p.salePrice <= :maxPrice)
             AND (:categoryId < 0 OR p.category.id = :categoryId)
+            AND (p.quantity >= :stock)
             AND p.disabled = FALSE
     """)
     List<Products> findAllByNameLikeAndSearchOptionsAndDisabledFalse(
@@ -45,6 +46,7 @@ public interface ProductRepository extends JpaRepository<Products, Long> {
             double minPrice,
             double maxPrice,
             int categoryId,
+            int stock,
             Pageable pageable
     );
 
@@ -55,13 +57,15 @@ public interface ProductRepository extends JpaRepository<Products, Long> {
             AND (:minPrice < 0 OR p.salePrice >= :minPrice)
             AND (:maxPrice < 0 OR p.salePrice <= :maxPrice)
             AND (:categoryId < 0 OR p.category.id = :categoryId)
+            AND (p.quantity >= :stock)
             AND p.disabled = FALSE
     """)
     int countAllByNameLikeAndSearchOptionsAndDisabledFalse(
             String name,
             double minPrice,
             double maxPrice,
-            int categoryId
+            int categoryId,
+            int stock
     );
 
     /// Return a list of products in sale, doesn't check for disabled
@@ -103,12 +107,14 @@ public interface ProductRepository extends JpaRepository<Products, Long> {
             AND (:minPrice < 0 OR p.salePrice >= :minPrice)
             AND (:maxPrice < 0 OR p.salePrice <= :maxPrice)
             AND (:categoryId < 0 OR p.category.id = :categoryId)
+            AND (p.quantity >= :stock)
     """)
     List<Products> findAllByNameLikeAndSearchOptions(
             String name,
             double minPrice,
             double maxPrice,
             int categoryId,
+            int stock,
             Pageable pageable
     );
 
@@ -119,11 +125,13 @@ public interface ProductRepository extends JpaRepository<Products, Long> {
             AND (:minPrice < 0 OR p.salePrice >= :minPrice)
             AND (:maxPrice < 0 OR p.salePrice <= :maxPrice)
             AND (:categoryId < 0 OR p.category.id = :categoryId)
+            AND (p.quantity >= :stock)
     """)
     int countAllByNameLikeAndSearchOptions(
             String name,
             double minPrice,
             double maxPrice,
+            int stock,
             int categoryId
     );
 }
