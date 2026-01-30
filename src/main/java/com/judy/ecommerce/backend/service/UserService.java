@@ -104,6 +104,11 @@ public class UserService {
             throw new BadCredentialsException("Incorrect password.");
         }
 
+        // Check password format
+        if (!passwordDTO.newPassword().matches("^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]+$")) {
+            throw new InvalidFormatException("Invalid password format.");
+        }
+
         user.setPassword(passwordEncoder.encode(passwordDTO.newPassword()));
         userRepository.save(user);
     }

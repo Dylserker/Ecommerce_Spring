@@ -52,6 +52,11 @@ public class AuthService {
             throw new ConflictException("There is already an account linked with this email address.");
         }
 
+        // Check password format
+        if (!request.password().matches("^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]+$")) {
+            throw new InvalidFormatException("Invalid password format.");
+        }
+
         // Create the user object
         Users user = new Users();
 
