@@ -48,23 +48,19 @@ public class PublicController {
         List<Map<String, Object>> promoProducts = new ArrayList<>();
         try {
             HttpEntity<Void> entity = new HttpEntity<>(headers);
-            ResponseEntity<List<Map<String, Object>>> response = restTemplate.exchange(
-                apiUrl,
-                org.springframework.http.HttpMethod.GET,
-                entity,
-                new ParameterizedTypeReference<List<Map<String, Object>>>() {}
-            );
-            allProducts = response.getBody();
+            ResponseEntity<Map> response = restTemplate.exchange(apiUrl, org.springframework.http.HttpMethod.GET, entity, Map.class);
+            Map body = response.getBody();
+            if (body != null && body.get("products") instanceof List) {
+                allProducts = (List<Map<String, Object>>) body.get("products");
+            }
         } catch (Exception e) {}
         try {
             HttpEntity<Void> entity = new HttpEntity<>(headers);
-            ResponseEntity<List<Map<String, Object>>> response = restTemplate.exchange(
-                promoUrl,
-                org.springframework.http.HttpMethod.GET,
-                entity,
-                new ParameterizedTypeReference<List<Map<String, Object>>>() {}
-            );
-            promoProducts = response.getBody();
+            ResponseEntity<Map> response = restTemplate.exchange(promoUrl, org.springframework.http.HttpMethod.GET, entity, Map.class);
+            Map body = response.getBody();
+            if (body != null && body.get("products") instanceof List) {
+                promoProducts = (List<Map<String, Object>>) body.get("products");
+            }
         } catch (Exception e) {}
         model.addAttribute("featuredProducts", allProducts != null && allProducts.size() > 0 ? allProducts.subList(0, Math.min(3, allProducts.size())) : new ArrayList<>());
         model.addAttribute("popularProducts", allProducts != null && allProducts.size() > 3 ? allProducts.subList(3, Math.min(6, allProducts.size())) : new ArrayList<>());
@@ -84,23 +80,19 @@ public class PublicController {
         List<Map<String, Object>> promoProducts = new ArrayList<>();
         try {
             HttpEntity<Void> entity = new HttpEntity<>(headers);
-            ResponseEntity<List<Map<String, Object>>> response = restTemplate.exchange(
-                apiUrl,
-                org.springframework.http.HttpMethod.GET,
-                entity,
-                new ParameterizedTypeReference<List<Map<String, Object>>>() {}
-            );
-            allProducts = response.getBody();
+            ResponseEntity<Map> response = restTemplate.exchange(apiUrl, org.springframework.http.HttpMethod.GET, entity, Map.class);
+            Map body = response.getBody();
+            if (body != null && body.get("products") instanceof List) {
+                allProducts = (List<Map<String, Object>>) body.get("products");
+            }
         } catch (Exception e) {}
         try {
             HttpEntity<Void> entity = new HttpEntity<>(headers);
-            ResponseEntity<List<Map<String, Object>>> response = restTemplate.exchange(
-                promoUrl,
-                org.springframework.http.HttpMethod.GET,
-                entity,
-                new ParameterizedTypeReference<List<Map<String, Object>>>() {}
-            );
-            promoProducts = response.getBody();
+            ResponseEntity<Map> response = restTemplate.exchange(promoUrl, org.springframework.http.HttpMethod.GET, entity, Map.class);
+            Map body = response.getBody();
+            if (body != null && body.get("products") instanceof List) {
+                promoProducts = (List<Map<String, Object>>) body.get("products");
+            }
         } catch (Exception e) {}
         model.addAttribute("featuredProducts", allProducts != null && allProducts.size() > 0 ? allProducts.subList(0, Math.min(3, allProducts.size())) : new ArrayList<>());
         model.addAttribute("popularProducts", allProducts != null && allProducts.size() > 3 ? allProducts.subList(3, Math.min(6, allProducts.size())) : new ArrayList<>());
@@ -118,13 +110,11 @@ public class PublicController {
         List<Map<String, Object>> products = new ArrayList<>();
         try {
             HttpEntity<Void> entity = new HttpEntity<>(headers);
-            ResponseEntity<List<Map<String, Object>>> response = restTemplate.exchange(
-                apiUrl,
-                org.springframework.http.HttpMethod.GET,
-                entity,
-                new ParameterizedTypeReference<List<Map<String, Object>>>() {}
-            );
-            products = response.getBody();
+            ResponseEntity<Map> response = restTemplate.exchange(apiUrl, org.springframework.http.HttpMethod.GET, entity, Map.class);
+            Map body = response.getBody();
+            if (body != null && body.get("products") instanceof List) {
+                products = (List<Map<String, Object>>) body.get("products");
+            }
         } catch (Exception e) {}
         model.addAttribute("products", products);
         return "public/product_list";
