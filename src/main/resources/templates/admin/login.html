@@ -22,8 +22,8 @@
                 <label for="password">Mot de passe:</label>
                 <input type="password" id="password" name="password" required placeholder="Entrez votre mot de passe">
             </div>
-            <div th:if="${param.error}" class="alert alert-error">
-                ❌ Identifiants administrateur invalides
+            <div th:if="${loginError}" class="alert alert-error">
+                <span th:text="${loginError}">Identifiants administrateur invalides</span>
             </div>
             <button type="submit" class="btn-primary">Connexion Admin</button>
             <div class="form-links">
